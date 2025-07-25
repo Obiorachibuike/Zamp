@@ -95,7 +95,7 @@ export function StoryWriterView() {
     setCurrentChapter(chapterIndex);
 
     try {
-        const result = await writeChapter({ prompt, tableOfContents: toc, chapterIndex });
+        const result = await writeChapter({ prompt, tableOfContents: toc, chapterIndex, wordsPerChapter });
         setChapterContent(result.chapterContent);
     } catch (error) {
         console.error('Error writing chapter:', error);
@@ -179,7 +179,7 @@ export function StoryWriterView() {
                   </Label>
                   <Slider
                     id="words-per-chapter"
-                    min={100} max={2000} step={50}
+                    min={100} max={5000} step={50}
                     value={[wordsPerChapter]}
                     onValueChange={(v) => setWordsPerChapter(v[0])}
                     disabled={isTocLoading}

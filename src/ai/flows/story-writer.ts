@@ -35,6 +35,7 @@ const WriteChapterInputSchema = z.object({
     prompt: z.string().describe('The original story prompt.'),
     tableOfContents: TableOfContentsOutputSchema.describe('The full table of contents and plot summary.'),
     chapterIndex: z.number().int().describe('The index of the chapter to write.'),
+    wordsPerChapter: z.number().int().describe('The approximate number of words for this chapter.'),
 });
 export type WriteChapterInput = z.infer<typeof WriteChapterInputSchema>;
 
@@ -113,6 +114,8 @@ const writeChapterFlow = ai.defineFlow(
       output: { schema: WriteChapterOutputSchema },
       prompt: `You are a master storyteller and novelist. Write a full chapter for a book.
       
+      Your writing style should be human-like, engaging, and natural. Vary your sentence structure and word choice to make the prose flow beautifully. Avoid robotic or repetitive phrasing.
+
       Original story prompt: ${input.prompt}
       
       Overall plot summary: ${input.tableOfContents.plotSummary}
@@ -120,7 +123,7 @@ const writeChapterFlow = ai.defineFlow(
       You are now writing Chapter ${input.chapterIndex + 1}: "${chapterToWrite.title}".
       Chapter Description: ${chapterToWrite.description}
 
-      The chapter should be detailed, engaging, and approximately ${input.tableOfContents.chapters.length > 0 ? (input.tableOfContents.chapters.length * (input as any).wordsPerChapter) / input.tableOfContents.chapters.length : 1000} words long. Write only the chapter content, without any titles or introductory phrases like "Chapter X".
+      The chapter should be detailed, engaging, and approximately ${input.wordsPerChapter} words long. Write only the chapter content, without any titles or introductory phrases like "Chapter X".
       `,
     });
 
