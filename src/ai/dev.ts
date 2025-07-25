@@ -21,3 +21,4 @@ import '@/ai/flows/email-reply-generator.ts';
 import '@/ai/flows/flashcard-generator.ts';
 import '@/ai/flows/edit-image.ts';
 import '@/ai/flows/social-content-generator.ts';
+import '@/ai/flows/humanizer.ts';

@@ -29,6 +29,7 @@ import {
   Copy,
   Edit,
   Share2,
+  Feather,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -152,6 +153,12 @@ const tools = [
     description: 'Draft posts for various social media platforms.',
     href: '/social-content-generator',
     icon: <Share2 className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'AI Text Humanizer',
+    description: 'Rewrite AI-generated text to sound more human.',
+    href: '/humanizer',
+    icon: <Feather className="h-8 w-8 text-primary" />,
   },
 ];
 

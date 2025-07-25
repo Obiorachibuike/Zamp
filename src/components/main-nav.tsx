@@ -24,6 +24,7 @@ import {
   Copy,
   Edit,
   Share2,
+  Feather,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -99,6 +100,11 @@ const menuItems = [
     href: '/social-content-generator',
     label: 'Social Content Generator',
     icon: <Share2 />,
+  },
+  {
+    href: '/humanizer',
+    label: 'AI Text Humanizer',
+    icon: <Feather />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
