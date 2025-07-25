@@ -63,7 +63,7 @@ export function SummarizerView() {
         </p>
       </header>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div className="flex flex-col-reverse">
+        <div className="flex flex-col">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

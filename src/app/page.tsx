@@ -18,6 +18,9 @@ import {
   Code2,
   Video,
   Scan,
+  Mic,
+  BarChart,
+  Languages,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -81,6 +84,24 @@ const tools = [
     description: 'Remove the background from an image.',
     href: '/background-remover',
     icon: <Scan className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Text-to-Speech',
+    description: 'Convert text into natural-sounding audio.',
+    href: '/text-to-speech',
+    icon: <Mic className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Chart Generator',
+    description: 'Create charts from data with natural language.',
+    href: '/chart-generator',
+    icon: <BarChart className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Translator',
+    description: 'Translate text between different languages.',
+    href: '/translator',
+    icon: <Languages className="h-8 w-8 text-primary" />,
   },
 ];
 

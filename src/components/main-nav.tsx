@@ -14,6 +14,9 @@ import {
   Code2,
   Video,
   Scan,
+  Mic,
+  BarChart,
+  Languages,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -39,6 +42,21 @@ const menuItems = [
     href: '/background-remover',
     label: 'Background Remover',
     icon: <Scan />,
+  },
+  {
+    href: '/text-to-speech',
+    label: 'Text-to-Speech',
+    icon: <Mic />,
+  },
+  {
+    href: '/chart-generator',
+    label: 'Chart Generator',
+    icon: <BarChart />,
+  },
+  {
+    href: '/translator',
+    label: 'Translator',
+    icon: <Languages />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];

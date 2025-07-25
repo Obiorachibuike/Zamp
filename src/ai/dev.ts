@@ -11,3 +11,6 @@ import '@/ai/flows/check-grammar.ts';
 import '@/ai/flows/generate-code.ts';
 import '@/ai/flows/generate-video.ts';
 import '@/ai/flows/remove-background.ts';
+import '@/ai/flows/text-to-speech.ts';
+import '@/ai/flows/generate-chart.ts';
+import '@/ai/flows/translator.ts';
