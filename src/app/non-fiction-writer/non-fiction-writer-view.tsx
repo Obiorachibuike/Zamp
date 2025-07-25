@@ -4,6 +4,7 @@
 import {
   generateNonFictionOutline,
   writeNonFictionSection,
+  generateNonFictionCover,
   type NonFictionOutlineOutput,
   type NonFictionGenre,
 } from '@/ai/flows/non-fiction-writer';
@@ -32,11 +33,15 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft,
   ArrowRight,
+  BookImage,
   BookOpen,
+  Brain,
+  Download,
+  ImageIcon,
   Loader2,
   PenSquare,
-  Brain,
 } from 'lucide-react';
+import NextImage from 'next/image';
 import { useState, type FormEvent } from 'react';
 
 type Stage = 'SETUP' | 'OUTLINE' | 'WRITING';
@@ -55,10 +60,12 @@ export function NonFictionWriterView() {
   const [outline, setOutline] = useState<NonFictionOutlineOutput | null>(null);
   const [currentSection, setCurrentSection] = useState(0);
   const [sectionContents, setSectionContents] = useState<Record<number, string>>({});
+  const [bookCoverUrl, setBookCoverUrl] = useState('');
 
   // Loading State
   const [isOutlineLoading, setIsOutlineLoading] = useState(false);
   const [isSectionLoading, setIsSectionLoading] = useState(false);
+  const [isCoverLoading, setIsCoverLoading] = useState(false);
   
   const { toast } = useToast();
 
@@ -114,6 +121,25 @@ export function NonFictionWriterView() {
         });
     } finally {
         setIsSectionLoading(false);
+    }
+  };
+
+  const handleGenerateCover = async () => {
+    if(!outline) return;
+    setIsCoverLoading(true);
+    setBookCoverUrl('');
+    try {
+      const result = await generateNonFictionCover({ title: outline.title, description: outline.introduction, genre: genre });
+      setBookCoverUrl(result.image);
+    } catch (error) {
+       console.error('Error generating book cover:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to generate book cover. Please try again.',
+        });
+    } finally {
+        setIsCoverLoading(false);
     }
   };
 
@@ -202,42 +228,71 @@ export function NonFictionWriterView() {
       )}
 
       {stage === 'OUTLINE' && outline && (
-        <Card>
+         <Card>
             <CardHeader>
-                <CardTitle>2. Content Outline</CardTitle>
+                <CardTitle>2. Content Outline & Cover</CardTitle>
                 <CardDescription>
-                    Review the generated outline. If it looks good, proceed to writing.
+                    Review the generated outline and create a cover for your work.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-                <div>
-                    <Label className="text-xs text-muted-foreground">Title</Label>
-                    <h3 className="font-bold text-lg">{outline.title}</h3>
-                </div>
-
-                <div>
-                    <Label className="text-xs text-muted-foreground">Introduction</Label>
-                    <p className="text-sm text-muted-foreground italic pt-2">{outline.introduction}</p>
-                </div>
-
-                <div>
-                    <Label className="text-xs text-muted-foreground">Sections</Label>
-                    <div className="space-y-2 pt-2">
-                        {outline.sections.map((section, index) => (
-                            <div key={index} className="flex items-start gap-2 text-sm">
-                                <span className="font-bold">{index + 1}.</span>
-                                <div>
-                                    <p className="font-semibold">{section.title}</p>
-                                    <p className="text-muted-foreground">{section.description}</p>
+            <CardContent className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div className="space-y-6">
+                    <div>
+                        <Label className="text-xs text-muted-foreground">Title</Label>
+                        <h3 className="font-bold text-lg">{outline.title}</h3>
+                    </div>
+                    <div>
+                        <Label className="text-xs text-muted-foreground">Introduction</Label>
+                        <p className="text-sm text-muted-foreground italic pt-2">{outline.introduction}</p>
+                    </div>
+                    <div>
+                        <Label className="text-xs text-muted-foreground">Sections</Label>
+                        <div className="space-y-2 pt-2">
+                            {outline.sections.map((section, index) => (
+                                <div key={index} className="flex items-start gap-2 text-sm">
+                                    <span className="font-bold">{index + 1}.</span>
+                                    <div>
+                                        <p className="font-semibold">{section.title}</p>
+                                        <p className="text-muted-foreground">{section.description}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                    </div>
+                     <div>
+                        <Label className="text-xs text-muted-foreground">Conclusion</Label>
+                        <p className="text-sm text-muted-foreground italic pt-2">{outline.conclusion}</p>
                     </div>
                 </div>
-
-                 <div>
-                    <Label className="text-xs text-muted-foreground">Conclusion</Label>
-                    <p className="text-sm text-muted-foreground italic pt-2">{outline.conclusion}</p>
+                <div className="space-y-4">
+                    <Card className="relative">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <BookImage className="h-5 w-5 text-primary"/>
+                                Book Cover
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="aspect-[2/3] w-full rounded-lg border bg-muted flex items-center justify-center">
+                            {isCoverLoading && <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />}
+                            {!isCoverLoading && !bookCoverUrl && <ImageIcon className="h-12 w-12 text-muted-foreground" />}
+                            {bookCoverUrl && <NextImage src={bookCoverUrl} alt="Generated book cover" layout="fill" className="rounded-lg object-cover" />}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="flex-col gap-2">
+                            <Button onClick={handleGenerateCover} disabled={isCoverLoading} className="w-full">
+                                {isCoverLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {bookCoverUrl ? 'Regenerate Cover' : 'Generate Cover'}
+                            </Button>
+                             {bookCoverUrl && (
+                                <Button asChild variant="secondary" className="w-full">
+                                    <a href={bookCoverUrl} download={`book_cover_${outline.title}.png`}>
+                                        <Download className="mr-2 h-4 w-4" /> Download
+                                    </a>
+                                </Button>
+                            )}
+                        </CardFooter>
+                    </Card>
                 </div>
             </CardContent>
             <CardFooter>

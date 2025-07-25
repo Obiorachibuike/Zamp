@@ -5,6 +5,7 @@
  *
  * - generateNonFictionOutline - Generates the structure and outline.
  * - writeNonFictionSection - Writes the content for a single section.
+ * - generateNonFictionCover - Generates a book cover image.
  */
 
 import {ai} from '@/ai/genkit';
@@ -49,6 +50,23 @@ const WriteNonFictionSectionOutputSchema = z.object({
 });
 export type WriteNonFictionSectionOutput = z.infer<typeof WriteNonFictionSectionOutputSchema>;
 
+// Schema for generating a book cover
+const GenerateNonFictionCoverInputSchema = z.object({
+    title: z.string().describe('The title of the book.'),
+    description: z.string().describe('The description or introduction of the book.'),
+    genre: NonFictionGenreEnum.describe('The genre of the work.'),
+});
+export type GenerateNonFictionCoverInput = z.infer<typeof GenerateNonFictionCoverInputSchema>;
+
+const GenerateNonFictionCoverOutputSchema = z.object({
+  image: z
+    .string()
+    .describe(
+      'The generated book cover image as a data URI that must include a MIME type and use Base64 encoding.'
+    ),
+});
+export type GenerateNonFictionCoverOutput = z.infer<typeof GenerateNonFictionCoverOutputSchema>;
+
 
 // Flow Functions
 export async function generateNonFictionOutline(input: NonFictionOutlineInput): Promise<NonFictionOutlineOutput> {
@@ -57,6 +75,10 @@ export async function generateNonFictionOutline(input: NonFictionOutlineInput): 
 
 export async function writeNonFictionSection(input: WriteNonFictionSectionInput): Promise<WriteNonFictionSectionOutput> {
   return writeNonFictionSectionFlow(input);
+}
+
+export async function generateNonFictionCover(input: GenerateNonFictionCoverInput): Promise<GenerateNonFictionCoverOutput> {
+    return generateNonFictionCoverFlow(input);
 }
 
 // Genkit Definitions
@@ -74,7 +96,7 @@ const generateNonFictionOutlineFlow = ai.defineFlow(
       output: { schema: NonFictionOutlineOutputSchema },
       prompt: `You are an expert author of non-fiction books. A user wants to write a new book.
       
-      Based on their request, generate a compelling title, a short introduction, a short conclusion, and an outline for a book with {{{numChapters}}} sections. 
+      Based on their request, generate a compelling title, a short introduction, a short conclusion, and an outline for a book with {{{numSections}}} sections. 
       For each section in the outline, provide a title and a brief one-sentence description of the key points.
 
       The book's genre is '{{{genre}}}'.
@@ -122,4 +144,29 @@ const writeNonFictionSectionFlow = ai.defineFlow(
     const { output } = await prompt({});
     return output!;
   }
+);
+
+const generateNonFictionCoverFlow = ai.defineFlow(
+    {
+        name: 'generateNonFictionCoverFlow',
+        inputSchema: GenerateNonFictionCoverInputSchema,
+        outputSchema: GenerateNonFictionCoverOutputSchema,
+    },
+    async (input) => {
+        const { media } = await ai.generate({
+            model: 'googleai/gemini-2.0-flash-preview-image-generation',
+            prompt: `Generate a professional, abstract book cover for a non-fiction book titled "${input.title}". 
+            The book is in the "${input.genre}" genre.
+            
+            Book Description: ${input.description}.
+            
+            The cover should be visually appealing, modern, and suitable for the genre. It should hint at the book's main themes. 
+            Do not include any text or titles on the image itself.`,
+            config: {
+                responseModalities: ['TEXT', 'IMAGE'],
+            },
+        });
+
+        return { image: media.url! };
+    }
 );
