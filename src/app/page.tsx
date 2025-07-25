@@ -1,3 +1,73 @@
-export default function Home() {
-  return <></>;
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  BookText,
+  Image,
+  LayoutGrid,
+  Mail,
+  MessageCircle,
+  Settings,
+} from 'lucide-react';
+import Link from 'next/link';
+
+const tools = [
+  {
+    title: 'Chatbot',
+    description: 'Engage in conversations with our AI assistant.',
+    href: '/chatbot',
+    icon: <MessageCircle className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Text Summarizer',
+    description: 'Get concise summaries of long texts.',
+    href: '/summarizer',
+    icon: <BookText className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Email Composer',
+    description: 'Draft professional emails from simple prompts.',
+    href: '/composer',
+    icon: <Mail className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Image Generator',
+    description: 'Create stunning visuals from text descriptions.',
+    href: '/image-generator',
+    icon: <Image className="h-8 w-8 text-primary" />,
+  },
+];
+
+export default function DashboardPage() {
+  return (
+    <div className="flex flex-col gap-8">
+      <header className="space-y-1.5">
+        <h1 className="font-headline text-3xl font-bold tracking-tight">
+          Dashboard
+        </h1>
+        <p className="text-muted-foreground">
+          Your one-stop dashboard for powerful AI utilities.
+        </p>
+      </header>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {tools.map((tool) => (
+          <Link href={tool.href} key={tool.href} className="group">
+            <Card className="flex h-full flex-col justify-between transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
+              <CardHeader>
+                <div className="mb-4">{tool.icon}</div>
+                <CardTitle>{tool.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>{tool.description}</CardDescription>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
 }
