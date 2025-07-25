@@ -17,6 +17,9 @@ import {
   Mic,
   BarChart,
   Languages,
+  Wand,
+  HelpCircle,
+  TrendingUp,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -57,6 +60,21 @@ const menuItems = [
     href: '/translator',
     label: 'Translator',
     icon: <Languages />,
+  },
+  {
+    href: '/sentiment-analyzer',
+    label: 'Sentiment Analyzer',
+    icon: <TrendingUp />,
+  },
+  {
+    href: '/tone-changer',
+    label: 'Tone Changer',
+    icon: <Wand />,
+  },
+  {
+    href: '/quiz-generator',
+    label: 'Quiz Generator',
+    icon: <HelpCircle />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];

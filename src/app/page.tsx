@@ -21,6 +21,9 @@ import {
   Mic,
   BarChart,
   Languages,
+  Wand,
+  HelpCircle,
+  TrendingUp,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -103,6 +106,24 @@ const tools = [
     href: '/translator',
     icon: <Languages className="h-8 w-8 text-primary" />,
   },
+  {
+    title: 'Sentiment Analyzer',
+    description: 'Analyze the sentiment of a piece of text.',
+    href: '/sentiment-analyzer',
+    icon: <TrendingUp className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Tone Changer',
+    description: 'Change the tone of your writing (e.g., formal, casual).',
+    href: '/tone-changer',
+    icon: <Wand className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Quiz Generator',
+    description: 'Create quizzes from any block of text.',
+    href: '/quiz-generator',
+    icon: <HelpCircle className="h-8 w-8 text-primary" />,
+  },
 ];
 
 export default function DashboardPage() {
@@ -116,7 +137,7 @@ export default function DashboardPage() {
           Your one-stop dashboard for powerful AI utilities.
         </p>
       </header>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {tools.map((tool) => (
           <Link href={tool.href} key={tool.href} className="group">
             <Card className="flex h-full flex-col justify-between transition-all group-hover:-translate-y-1 group-hover:shadow-lg">

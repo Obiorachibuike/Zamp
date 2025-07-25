@@ -14,3 +14,6 @@ import '@/ai/flows/remove-background.ts';
 import '@/ai/flows/text-to-speech.ts';
 import '@/ai/flows/generate-chart.ts';
 import '@/ai/flows/translator.ts';
+import '@/ai/flows/sentiment-analyzer.ts';
+import '@/ai/flows/tone-changer.ts';
+import '@/ai/flows/quiz-generator.ts';
