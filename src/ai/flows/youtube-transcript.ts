@@ -9,7 +9,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { YouTubeTranscript } from 'youtube-transcript';
+import { YoutubeTranscript } from 'youtube-transcript';
 
 const GetYouTubeTranscriptInputSchema = z.object({
   url: z.string().url().describe('The URL of the YouTube video.'),
@@ -40,7 +40,7 @@ const getYouTubeTranscriptFlow = ai.defineFlow(
   },
   async (input) => {
     try {
-      const transcript = await YouTubeTranscript.fetchTranscript(input.url);
+      const transcript = await YoutubeTranscript.fetchTranscript(input.url);
       const fullText = transcript.map(line => line.text).join(' ');
       return { transcript, fullText };
     } catch (error: any) {
