@@ -46,19 +46,33 @@ const socialContentGeneratorFlow = ai.defineFlow(
       content: z.string().describe('The AI-generated social media content, including relevant hashtags.'),
     });
 
+    const lengthInstruction = input.platform === 'Twitter' 
+        ? "The post should be short and concise, suitable for Twitter's character limit."
+        : "The post can be longer and more detailed."
+
     // Define the prompt for generating text content
     const textPrompt = ai.definePrompt({
         name: 'socialContentGeneratorTextPrompt',
-        input: {schema: GenerateSocialContentInputSchema},
+        input: {schema: z.object({
+            prompt: z.string(),
+            platform: z.string(),
+            lengthInstruction: z.string(),
+        })},
         output: {schema: TextOnlyOutputSchema},
         prompt: `You are an expert social media manager. Generate a post for the {{{platform}}} platform based on the following prompt. Tailor the content, tone, and format (including relevant hashtags) to be optimal for that specific platform.
+
+{{{lengthInstruction}}}
 
 Prompt:
 {{{prompt}}}`,
     });
 
     // Generate the text content
-    const { output: textOutput } = await textPrompt(input);
+    const { output: textOutput } = await textPrompt({
+        prompt: input.prompt,
+        platform: input.platform,
+        lengthInstruction: lengthInstruction
+    });
     const content = textOutput!.content;
 
     let imageUrl: string | undefined;
