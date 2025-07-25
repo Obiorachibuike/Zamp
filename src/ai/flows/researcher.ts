@@ -22,8 +22,14 @@ const LinkSchema = z.object({
 });
 
 const ResearchTopicOutputSchema = z.object({
-  summary: z.string().describe('A detailed summary of the research topic.'),
-  links: z.array(LinkSchema).describe('A list of relevant links with titles and snippets.'),
+  summary: z
+    .string()
+    .describe(
+      'A concise summary of the research topic, with inline citations (e.g., [1]) corresponding to the links array.'
+    ),
+  links: z
+    .array(LinkSchema)
+    .describe('A list of relevant links with titles and snippets.'),
 });
 export type ResearchTopicOutput = z.infer<typeof ResearchTopicOutputSchema>;
 
@@ -35,11 +41,11 @@ const prompt = ai.definePrompt({
   name: 'researcherPrompt',
   input: {schema: ResearchTopicInputSchema},
   output: {schema: ResearchTopicOutputSchema},
-  prompt: `You are an expert researcher. Your task is to provide a comprehensive summary and a list of relevant links for the given topic.
+  prompt: `You are an expert researcher. Your task is to provide a concise summary and a list of relevant links for the given topic.
 
 Topic: {{{topic}}}
 
-Please provide a detailed summary of the topic.
+Please provide a concise summary of the topic. Where appropriate, cite information using a number like [1], which corresponds to the links provided below.
 Then, provide a list of at least 5 relevant and reputable web links. For each link, include a title, the full URL, and a brief snippet describing the content of the page.`,
 });
 
