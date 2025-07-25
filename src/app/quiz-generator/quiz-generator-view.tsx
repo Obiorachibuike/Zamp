@@ -150,7 +150,7 @@ export function QuizGeneratorView() {
                   <Slider
                     id="num-questions"
                     min={1}
-                    max={10}
+                    max={50}
                     step={1}
                     value={[numQuestions]}
                     onValueChange={(value) => setNumQuestions(value[0])}
