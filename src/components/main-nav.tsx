@@ -11,6 +11,9 @@ import {
   Smile,
   Type,
   FileCheck,
+  Code2,
+  Video,
+  Scan,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -30,6 +33,13 @@ const menuItems = [
   { href: '/avatar-generator', label: 'Avatar Generator', icon: <Smile /> },
   { href: '/image-captioning', label: 'Image Captioning', icon: <Type /> },
   { href: '/grammar-checker', label: 'Grammar Checker', icon: <FileCheck /> },
+  { href: '/code-generator', label: 'Code Generator', icon: <Code2 /> },
+  { href: '/video-generator', label: 'Video Generator', icon: <Video /> },
+  {
+    href: '/background-remover',
+    label: 'Background Remover',
+    icon: <Scan />,
+  },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
 

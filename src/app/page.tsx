@@ -15,6 +15,9 @@ import {
   Smile,
   Type,
   FileCheck,
+  Code2,
+  Video,
+  Scan,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -60,6 +63,24 @@ const tools = [
     description: 'Correct grammar and improve your writing style.',
     href: '/grammar-checker',
     icon: <FileCheck className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Code Generator',
+    description: 'Generate code in various languages from a prompt.',
+    href: '/code-generator',
+    icon: <Code2 className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Video Generator',
+    description: 'Create a short video from a text description.',
+    href: '/video-generator',
+    icon: <Video className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Background Remover',
+    description: 'Remove the background from an image.',
+    href: '/background-remover',
+    icon: <Scan className="h-8 w-8 text-primary" />,
   },
 ];
 
