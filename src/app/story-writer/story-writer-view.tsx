@@ -53,7 +53,7 @@ export function StoryWriterView() {
   const [prompt, setPrompt] = useState('');
   const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
+  const [wordsPerChapter, setWordsPerChapter] = useState(500);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');
@@ -144,6 +144,13 @@ export function StoryWriterView() {
         setIsCoverLoading(false);
     }
   };
+  
+  const handleTitleSelect = (newTitle: string) => {
+      if (toc) {
+          setToc({...toc, title: newTitle});
+          toast({ title: "Title Updated", description: `Your story's title is now "${newTitle}".` });
+      }
+  };
 
   return (
     <div className="space-y-8">
@@ -167,7 +174,7 @@ export function StoryWriterView() {
           <CardContent>
             <form onSubmit={handleTocSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="prompt">Story Prompt</Label>
+                <Label htmlFor="prompt">Story Prompt / Default Title</Label>
                 <Textarea
                   id="prompt"
                   value={prompt}
@@ -224,7 +231,7 @@ export function StoryWriterView() {
                 </div>
               <Button type="submit" disabled={isTocLoading || !prompt.trim()}>
                 {isTocLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Generate Outline
+                Generate Outline & Titles
               </Button>
             </form>
           </CardContent>
@@ -240,19 +247,41 @@ export function StoryWriterView() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                <div className="space-y-4">
-                    <h3 className="font-bold text-lg">{toc.title}</h3>
-                    <p className="text-sm text-muted-foreground italic">{toc.plotSummary}</p>
-                    <div className="space-y-2">
-                        {toc.chapters.map((chapter, index) => (
-                            <div key={index} className="flex items-start gap-2 text-sm">
-                                <span className="font-bold">{index + 1}.</span>
-                                <div>
-                                    <p className="font-semibold">{chapter.title}</p>
-                                    <p className="text-muted-foreground">{chapter.description}</p>
+                <div className="space-y-6">
+                    <div>
+                        <Label className="text-xs text-muted-foreground">Title</Label>
+                        <h3 className="font-bold text-lg">{toc.title}</h3>
+                    </div>
+
+                    <div>
+                        <Label className="text-xs text-muted-foreground">Title Suggestions</Label>
+                        <div className="flex flex-wrap gap-2 pt-2">
+                            {toc.suggestedTitles.map((title, index) => (
+                                <Button key={index} variant="outline" size="sm" onClick={() => handleTitleSelect(title)}>
+                                    {title}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <Label className="text-xs text-muted-foreground">Plot Summary</Label>
+                        <p className="text-sm text-muted-foreground italic pt-2">{toc.plotSummary}</p>
+                    </div>
+
+                    <div>
+                        <Label className="text-xs text-muted-foreground">Chapters</Label>
+                        <div className="space-y-2 pt-2">
+                            {toc.chapters.map((chapter, index) => (
+                                <div key={index} className="flex items-start gap-2 text-sm">
+                                    <span className="font-bold">{index + 1}.</span>
+                                    <div>
+                                        <p className="font-semibold">{chapter.title}</p>
+                                        <p className="text-muted-foreground">{chapter.description}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
                 <div className="space-y-4">

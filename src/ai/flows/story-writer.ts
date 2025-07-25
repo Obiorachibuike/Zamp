@@ -28,7 +28,8 @@ const ChapterOutlineSchema = z.object({
 });
 
 const TableOfContentsOutputSchema = z.object({
-  title: z.string().describe('A compelling title for the whole story or book.'),
+  title: z.string().describe('The user-provided prompt, to be used as the default title.'),
+  suggestedTitles: z.array(z.string()).describe('A list of 5 alternative book titles that fit the prompt and genre.'),
   plotSummary: z.string().describe('A 2-3 paragraph summary of the entire plot.'),
   chapters: z.array(ChapterOutlineSchema).describe('The list of chapters with their titles and descriptions.'),
 });
@@ -97,7 +98,11 @@ const tableOfContentsFlow = ai.defineFlow(
       output: { schema: TableOfContentsOutputSchema },
       prompt: `You are a master storyteller and novelist. A user wants to write a new book.
       
-      Based on their prompt, generate a compelling book title, a detailed plot summary (2-3 paragraphs), and a table of contents for a book with {{{numChapters}}} chapters. Each chapter should be approximately {{{wordsPerChapter}}} words long. For each chapter in the table of contents, provide a title and a brief one-sentence description of the key events.
+      Based on their prompt, generate a detailed plot summary (2-3 paragraphs), and a table of contents for a book with {{{numChapters}}} chapters. Each chapter should be approximately {{{wordsPerChapter}}} words long. For each chapter in the table of contents, provide a title and a brief one-sentence description of the key events.
+
+      Also, provide a list of 5 compelling, alternative book titles that fit the story and the '{{{genre}}}' genre.
+
+      The user's original prompt will be used as the default title, so include it as the 'title' field in the output.
 
       The story should fit the '{{{genre}}}' genre.
 
@@ -105,7 +110,11 @@ const tableOfContentsFlow = ai.defineFlow(
       `,
     });
     const { output } = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('Failed to generate table of contents.');
+    }
+    // Ensure the original prompt is passed through as the main title
+    return { ...output, title: input.prompt };
   }
 );
 
