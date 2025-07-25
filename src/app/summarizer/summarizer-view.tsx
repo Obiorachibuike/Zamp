@@ -13,7 +13,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Clipboard, Loader2 } from 'lucide-react';
+import { Clipboard, Loader2, Sparkles, User } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 
 export function SummarizerView() {
@@ -63,65 +63,73 @@ export function SummarizerView() {
         </p>
       </header>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Text</CardTitle>
-            <CardDescription>
-              Paste the text you want to summarize.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="text-to-summarize" className="sr-only">
-                  Text to summarize
-                </Label>
-                <Textarea
-                  id="text-to-summarize"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Paste your text here..."
-                  className="h-64 resize-none"
-                  disabled={isLoading}
-                />
-              </div>
-              <Button type="submit" disabled={isLoading || !text.trim()}>
-                {isLoading && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Summarize
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col-reverse">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-6 w-6" /> Your Text
+                </CardTitle>
+                <CardDescription>
+                  Paste the text you want to summarize.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="text-to-summarize" className="sr-only">
+                      Text to summarize
+                    </Label>
+                    <Textarea
+                      id="text-to-summarize"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      placeholder="Paste your text here..."
+                      className="h-64 resize-none"
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <Button type="submit" disabled={isLoading || !text.trim()}>
+                    {isLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Summarize
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+        </div>
 
-        <Card className="relative">
-          <CardHeader>
-            <CardTitle>Summary</CardTitle>
-            <CardDescription>
-              Here is the AI-generated summary of your text.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              value={summary}
-              readOnly
-              placeholder="Your summary will appear here..."
-              className="h-64 resize-none bg-muted/50"
-            />
-          </CardContent>
-          {summary && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-4 top-4"
-              onClick={handleCopy}
-            >
-              <Clipboard className="h-4 w-4" />
-              <span className="sr-only">Copy summary</span>
-            </Button>
-          )}
-        </Card>
+        <div className="flex flex-col">
+            <Card className="relative">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-primary" /> Summary
+                </CardTitle>
+                <CardDescription>
+                  Here is the AI-generated summary of your text.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  value={summary}
+                  readOnly
+                  placeholder="Your summary will appear here..."
+                  className="h-64 resize-none bg-muted/50"
+                />
+              </CardContent>
+              {summary && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-4"
+                  onClick={handleCopy}
+                >
+                  <Clipboard className="h-4 w-4" />
+                  <span className="sr-only">Copy summary</span>
+                </Button>
+              )}
+            </Card>
+        </div>
       </div>
     </div>
   );

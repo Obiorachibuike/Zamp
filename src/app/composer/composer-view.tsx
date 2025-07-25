@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Clipboard, Loader2 } from 'lucide-react';
+import { Clipboard, Loader2, Sparkles, User } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 
 export function ComposerView() {
@@ -58,58 +58,67 @@ export function ComposerView() {
         </p>
       </header>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Prompt</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="prompt">
-                  Describe the email or message you want to write.
-                </Label>
-                <Input
-                  id="prompt"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="e.g., A follow-up email after a job interview"
-                  disabled={isLoading}
-                />
-              </div>
-              <Button type="submit" disabled={isLoading || !prompt.trim()}>
-                {isLoading && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Compose
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col-reverse">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-6 w-6" /> Your Prompt
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="prompt">
+                      Describe the email or message you want to write.
+                    </Label>
+                    <Input
+                      id="prompt"
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="e.g., A follow-up email after a job interview"
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <Button type="submit" disabled={isLoading || !prompt.trim()}>
+                    {isLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Compose
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+        </div>
 
-        <Card className="relative">
-          <CardHeader>
-            <CardTitle>Generated Composition</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              value={composition}
-              readOnly
-              placeholder="Your generated message will appear here..."
-              className="h-64 resize-none"
-            />
-          </CardContent>
-          {composition && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-4 top-4"
-              onClick={handleCopy}
-            >
-              <Clipboard className="h-4 w-4" />
-              <span className="sr-only">Copy</span>
-            </Button>
-          )}
-        </Card>
+        <div className="flex flex-col">
+          <Card className="relative">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-6 w-6 text-primary" /> Generated
+                Composition
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={composition}
+                readOnly
+                placeholder="Your generated message will appear here..."
+                className="h-64 resize-none"
+              />
+            </CardContent>
+            {composition && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-4 top-4"
+                onClick={handleCopy}
+              >
+                <Clipboard className="h-4 w-4" />
+                <span className="sr-only">Copy</span>
+              </Button>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );
