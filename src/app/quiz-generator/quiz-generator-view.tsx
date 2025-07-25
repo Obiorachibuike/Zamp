@@ -23,6 +23,7 @@ import {
   Lightbulb,
   Check,
   X,
+  Clipboard,
 } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -70,6 +71,7 @@ export function QuizGeneratorView() {
   };
 
   const handleQuizSubmit = () => {
+    if (!quizData) return;
     setSubmitted(true);
     const correctAnswers = quizData.questions.filter(
       (q, i) => userAnswers[i] === q.answer
@@ -86,6 +88,25 @@ export function QuizGeneratorView() {
       (q, i) => userAnswers[i] === q.answer
     ).length;
     return `${correctAnswers} / ${quizData.questions.length}`;
+  };
+
+  const handleCopy = () => {
+    if (!quizData) return;
+
+    const quizText = `Title: ${quizData.title}\n\n${quizData.questions
+      .map((q, i) => {
+        const options = q.options
+          .map((opt, j) => `  ${String.fromCharCode(97 + j)}) ${opt}`)
+          .join('\n');
+        return `${i + 1}. ${q.question}\n${options}\n   Answer: ${q.answer}`;
+      })
+      .join('\n\n')}`;
+
+    navigator.clipboard.writeText(quizText);
+    toast({
+      title: 'Copied!',
+      description: 'The quiz content has been copied to your clipboard.',
+    });
   };
 
   return (
@@ -147,7 +168,7 @@ export function QuizGeneratorView() {
           </Card>
         </div>
         <div className="flex flex-col">
-          <Card>
+          <Card className="relative">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
@@ -212,9 +233,18 @@ export function QuizGeneratorView() {
                         </RadioGroup>
                       </div>
                     ))}
-                     <Button onClick={handleQuizSubmit} disabled={submitted || Object.keys(userAnswers).length !== quizData.questions.length}>
-                        Submit Quiz
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button 
+                            onClick={handleQuizSubmit} 
+                            disabled={submitted || !quizData || Object.keys(userAnswers).length !== quizData.questions.length}
+                        >
+                            Submit Quiz
+                        </Button>
+                        <Button variant="outline" onClick={handleCopy} disabled={!quizData}>
+                            <Clipboard className="mr-2 h-4 w-4" />
+                            Copy Quiz
+                        </Button>
+                    </div>
                   </div>
                 )}
               </div>
