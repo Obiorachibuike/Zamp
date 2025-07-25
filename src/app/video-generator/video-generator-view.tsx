@@ -40,7 +40,7 @@ export function VideoGeneratorView() {
     } catch (error: any) {
       console.error('Error generating video:', error);
       let description = 'Failed to generate the video. Please try again later.';
-      if (error.message && error.message.includes('billing')) {
+      if (error.message && (error.message.includes('billing') || error.message.includes('FAILED_PRECONDITION'))) {
         description = 'Video generation requires a GCP project with billing enabled. Please check your project configuration.';
       } else if (error.message && error.message.includes('quota')) {
         description = 'You have exceeded your video generation quota. Please try again later.'
