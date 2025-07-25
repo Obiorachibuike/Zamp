@@ -32,6 +32,7 @@ import {
   Feather,
   Youtube,
   Search,
+  BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -173,6 +174,12 @@ const tools = [
     description: 'Get a summary and links about a topic.',
     href: '/researcher',
     icon: <Search className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Story Writer',
+    description: 'Write a story or novel, chapter by chapter.',
+    href: '/story-writer',
+    icon: <BookOpen className="h-8 w-8 text-primary" />,
   },
 ];
 

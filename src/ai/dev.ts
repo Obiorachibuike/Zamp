@@ -24,3 +24,4 @@ import '@/ai/flows/social-content-generator.ts';
 import '@/ai/flows/humanizer.ts';
 import '@/ai/flows/youtube-transcript.ts';
 import '@/ai/flows/researcher.ts';
+import '@/ai/flows/story-writer.ts';
