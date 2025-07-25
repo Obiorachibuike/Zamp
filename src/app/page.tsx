@@ -28,6 +28,7 @@ import {
   Reply,
   Copy,
   Edit,
+  Share2,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -145,6 +146,12 @@ const tools = [
     description: 'Create flashcards for studying from text.',
     href: '/flashcard-generator',
     icon: <Copy className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Social Content Generator',
+    description: 'Draft posts for various social media platforms.',
+    href: '/social-content-generator',
+    icon: <Share2 className="h-8 w-8 text-primary" />,
   },
 ];
 

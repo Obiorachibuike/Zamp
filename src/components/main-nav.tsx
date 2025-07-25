@@ -23,6 +23,7 @@ import {
   Reply,
   Copy,
   Edit,
+  Share2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -93,6 +94,11 @@ const menuItems = [
     href: '/flashcard-generator',
     label: 'Flashcard Generator',
     icon: <Copy />,
+  },
+  {
+    href: '/social-content-generator',
+    label: 'Social Content Generator',
+    icon: <Share2 />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
