@@ -46,14 +46,14 @@ import { useState, type FormEvent } from 'react';
 
 type Stage = 'SETUP' | 'OUTLINE' | 'WRITING';
 
-const genres = ['Sci-Fi', 'Fantasy', 'Romance', 'Mystery', 'Thriller'];
+const genres = ['Sci-Fi', 'Fantasy', 'Romance', 'Mystery', 'Thriller', 'Horror', 'Adventure', 'Historical Fiction', 'Comedy', 'Dystopian', 'Young Adult'];
 
 export function StoryWriterView() {
   // Setup State
   const [prompt, setPrompt] = useState('');
   const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(500);
+  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');

@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenreEnum = z.enum(['Sci-Fi', 'Fantasy', 'Romance', 'Mystery', 'Thriller']);
+const GenreEnum = z.enum(['Sci-Fi', 'Fantasy', 'Romance', 'Mystery', 'Thriller', 'Horror', 'Adventure', 'Historical Fiction', 'Comedy', 'Dystopian', 'Young Adult']);
 
 // Schema for generating the table of contents
 const TableOfContentsInputSchema = z.object({
