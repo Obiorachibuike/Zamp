@@ -19,3 +19,4 @@ import '@/ai/flows/tone-changer.ts';
 import '@/ai/flows/quiz-generator.ts';
 import '@/ai/flows/email-reply-generator.ts';
 import '@/ai/flows/flashcard-generator.ts';
+import '@/ai/flows/edit-image.ts';

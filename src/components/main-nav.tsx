@@ -22,6 +22,7 @@ import {
   TrendingUp,
   Reply,
   Copy,
+  Edit,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -47,6 +48,11 @@ const menuItems = [
     href: '/background-remover',
     label: 'Background Remover',
     icon: <Scan />,
+  },
+  {
+    href: '/image-editor',
+    label: 'Image Editor',
+    icon: <Edit />,
   },
   {
     href: '/text-to-speech',

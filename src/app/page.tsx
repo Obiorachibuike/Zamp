@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -26,6 +27,7 @@ import {
   TrendingUp,
   Reply,
   Copy,
+  Edit,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -89,6 +91,12 @@ const tools = [
     description: 'Remove the background from an image.',
     href: '/background-remover',
     icon: <Scan className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Image Editor',
+    description: 'Edit an image using a text prompt.',
+    href: '/image-editor',
+    icon: <Edit className="h-8 w-8 text-primary" />,
   },
   {
     title: 'Text-to-Speech',
