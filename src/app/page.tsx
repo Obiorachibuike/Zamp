@@ -31,6 +31,7 @@ import {
   Share2,
   Feather,
   Youtube,
+  Search,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -166,6 +167,12 @@ const tools = [
     description: 'Rewrite AI-generated text to sound more human.',
     href: '/humanizer',
     icon: <Feather className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'AI Researcher',
+    description: 'Get a summary and links about a topic.',
+    href: '/researcher',
+    icon: <Search className="h-8 w-8 text-primary" />,
   },
 ];
 

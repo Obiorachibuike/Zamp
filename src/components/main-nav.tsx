@@ -26,6 +26,7 @@ import {
   Share2,
   Feather,
   Youtube,
+  Search,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -111,6 +112,11 @@ const menuItems = [
     href: '/humanizer',
     label: 'AI Text Humanizer',
     icon: <Feather />,
+  },
+  {
+    href: '/researcher',
+    label: 'AI Researcher',
+    icon: <Search />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
