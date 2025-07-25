@@ -18,9 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Clipboard, Loader2, User, Share2 } from 'lucide-react';
+import { Clipboard, Loader2, User, Share2, ImageIcon, Download } from 'lucide-react';
+import NextImage from 'next/image';
 import { useState, type FormEvent } from 'react';
 
 const platforms = [
@@ -33,7 +35,9 @@ const platforms = [
 export function SocialContentGeneratorView() {
   const [prompt, setPrompt] = useState('');
   const [platform, setPlatform] = useState('Twitter');
+  const [generateImage, setGenerateImage] = useState(false);
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -43,10 +47,18 @@ export function SocialContentGeneratorView() {
 
     setIsLoading(true);
     setContent('');
+    setImageUrl(null);
 
     try {
-      const result = await generateSocialContent({ prompt, platform });
+      const result = await generateSocialContent({
+        prompt,
+        platform,
+        generateImage,
+      });
       setContent(result.content);
+      if (result.image) {
+        setImageUrl(result.image);
+      }
     } catch (error) {
       console.error('Error generating social content:', error);
       toast({
@@ -58,8 +70,8 @@ export function SocialContentGeneratorView() {
       setIsLoading(false);
     }
   };
-  
-    const handleCopy = () => {
+
+  const handleCopy = () => {
     navigator.clipboard.writeText(content);
     toast({
       title: 'Copied!',
@@ -74,18 +86,18 @@ export function SocialContentGeneratorView() {
           Social Content Generator
         </h1>
         <p className="text-muted-foreground">
-          Draft posts for various social media platforms.
+          Draft posts for various social media platforms, with optional AI-generated images.
         </p>
       </header>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div className="flex flex-col">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-6 w-6" /> Your Prompt
               </CardTitle>
               <CardDescription>
-                Describe the post you want to create and select the platform.
+                Describe the post you want to create.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -96,8 +108,8 @@ export function SocialContentGeneratorView() {
                     id="prompt"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="e.g., Announce a summer sale with a 20% discount on all products."
-                    className="h-40 resize-none"
+                    placeholder="e.g., Announce a summer sale with a 20% discount."
+                    className="h-28 resize-none"
                     disabled={isLoading}
                   />
                 </div>
@@ -120,6 +132,15 @@ export function SocialContentGeneratorView() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="generate-image"
+                    checked={generateImage}
+                    onCheckedChange={setGenerateImage}
+                    disabled={isLoading}
+                  />
+                  <Label htmlFor="generate-image">Generate Image</Label>
+                </div>
                 <Button type="submit" disabled={isLoading || !prompt.trim()}>
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -130,33 +151,70 @@ export function SocialContentGeneratorView() {
             </CardContent>
           </Card>
         </div>
-        <div className="flex flex-col">
-          <Card className="relative">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Share2 className="h-6 w-6 text-primary" /> Generated Content
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                value={content}
-                readOnly
-                placeholder="The generated social media post will appear here..."
-                className="h-56 resize-none bg-muted/50"
-              />
-            </CardContent>
-            {content && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-4 top-4"
-                onClick={handleCopy}
-              >
-                <Clipboard className="h-4 w-4" />
-                <span className="sr-only">Copy content</span>
-              </Button>
-            )}
-          </Card>
+        <div className="lg:col-span-2">
+            <Card className="relative">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Share2 className="h-6 w-6 text-primary" /> Generated Content
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                    <Textarea
+                        value={isLoading ? "Generating..." : content}
+                        readOnly
+                        placeholder="The generated social media post will appear here..."
+                        className="h-40 resize-none bg-muted/50"
+                    />
+                     <div className="relative aspect-video w-full rounded-lg border bg-muted flex items-center justify-center">
+                        {isLoading && generateImage && (
+                            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                            <Loader2 className="h-8 w-8 animate-spin" />
+                            <p>Generating image...</p>
+                            </div>
+                        )}
+                        {!isLoading && !imageUrl && (
+                            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                                <ImageIcon className="h-12 w-12" />
+                                <p>Generated image will appear here</p>
+                            </div>
+                        )}
+                        {imageUrl && (
+                            <NextImage
+                                src={imageUrl}
+                                alt="Generated social media image"
+                                layout="fill"
+                                className="rounded-lg object-cover"
+                            />
+                        )}
+                        {imageUrl && (
+                          <Button
+                            asChild
+                            variant="secondary"
+                            size="icon"
+                            className="absolute right-2 top-2 z-10"
+                          >
+                            <a href={imageUrl} download="social-image.png">
+                              <Download className="h-4 w-4" />
+                              <span className="sr-only">Download Image</span>
+                            </a>
+                          </Button>
+                        )}
+                    </div>
+                </div>
+              </CardContent>
+              {content && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-4"
+                  onClick={handleCopy}
+                >
+                  <Clipboard className="h-4 w-4" />
+                  <span className="sr-only">Copy content</span>
+                </Button>
+              )}
+            </Card>
         </div>
       </div>
     </div>
