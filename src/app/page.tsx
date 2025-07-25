@@ -12,6 +12,9 @@ import {
   Mail,
   MessageCircle,
   Settings,
+  Smile,
+  Type,
+  FileCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -39,6 +42,24 @@ const tools = [
     description: 'Create stunning visuals from text descriptions.',
     href: '/image-generator',
     icon: <Image className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'AI Avatar Generator',
+    description: 'Generate unique avatars from text prompts.',
+    href: '/avatar-generator',
+    icon: <Smile className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Image Captioning',
+    description: 'Generate descriptive captions for your images.',
+    href: '/image-captioning',
+    icon: <Type className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Grammar & Style Checker',
+    description: 'Correct grammar and improve your writing style.',
+    href: '/grammar-checker',
+    icon: <FileCheck className="h-8 w-8 text-primary" />,
   },
 ];
 

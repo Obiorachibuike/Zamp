@@ -8,6 +8,9 @@ import {
   Mail,
   MessageCircle,
   Settings,
+  Smile,
+  Type,
+  FileCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -24,6 +27,9 @@ const menuItems = [
   { href: '/summarizer', label: 'Summarizer', icon: <BookText /> },
   { href: '/composer', label: 'Composer', icon: <Mail /> },
   { href: '/image-generator', label: 'Image Generator', icon: <Image /> },
+  { href: '/avatar-generator', label: 'Avatar Generator', icon: <Smile /> },
+  { href: '/image-captioning', label: 'Image Captioning', icon: <Type /> },
+  { href: '/grammar-checker', label: 'Grammar Checker', icon: <FileCheck /> },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
 
