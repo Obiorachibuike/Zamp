@@ -33,6 +33,7 @@ import {
   Youtube,
   Search,
   BookOpen,
+  Brain,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -180,6 +181,12 @@ const tools = [
     description: 'Write a story or novel, chapter by chapter.',
     href: '/story-writer',
     icon: <BookOpen className="h-8 w-8 text-primary" />,
+  },
+    {
+    title: 'Non-Fiction Writer',
+    description: 'Generate structured non-fiction content.',
+    href: '/non-fiction-writer',
+    icon: <Brain className="h-8 w-8 text-primary" />,
   },
 ];
 

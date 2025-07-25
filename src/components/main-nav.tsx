@@ -28,6 +28,7 @@ import {
   Youtube,
   Search,
   BookOpen,
+  Brain,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -123,6 +124,11 @@ const menuItems = [
     href: '/story-writer',
     label: 'Story Writer',
     icon: <BookOpen />,
+  },
+  {
+    href: '/non-fiction-writer',
+    label: 'Non-Fiction Writer',
+    icon: <Brain />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
