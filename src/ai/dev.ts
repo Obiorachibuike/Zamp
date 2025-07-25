@@ -18,3 +18,4 @@ import '@/ai/flows/sentiment-analyzer.ts';
 import '@/ai/flows/tone-changer.ts';
 import '@/ai/flows/quiz-generator.ts';
 import '@/ai/flows/email-reply-generator.ts';
+import '@/ai/flows/flashcard-generator.ts';

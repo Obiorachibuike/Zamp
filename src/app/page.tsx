@@ -25,6 +25,7 @@ import {
   HelpCircle,
   TrendingUp,
   Reply,
+  Copy,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -130,6 +131,12 @@ const tools = [
     description: 'Generate smart replies to your emails.',
     href: '/email-reply-generator',
     icon: <Reply className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Flashcard Generator',
+    description: 'Create flashcards for studying from text.',
+    href: '/flashcard-generator',
+    icon: <Copy className="h-8 w-8 text-primary" />,
   },
 ];
 

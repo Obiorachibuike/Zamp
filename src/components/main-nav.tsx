@@ -21,6 +21,7 @@ import {
   HelpCircle,
   TrendingUp,
   Reply,
+  Copy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -81,6 +82,11 @@ const menuItems = [
     href: '/email-reply-generator',
     label: 'Email Reply Generator',
     icon: <Reply />,
+  },
+  {
+    href: '/flashcard-generator',
+    label: 'Flashcard Generator',
+    icon: <Copy />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
