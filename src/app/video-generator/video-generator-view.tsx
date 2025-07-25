@@ -37,13 +37,19 @@ export function VideoGeneratorView() {
     try {
       const result = await generateVideo({ prompt });
       setVideoUrl(result.video);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating video:', error);
+      let description = 'Failed to generate the video. Please try again later.';
+      if (error.message && error.message.includes('billing')) {
+        description = 'Video generation requires a GCP project with billing enabled. Please check your project configuration.';
+      } else if (error.message && error.message.includes('quota')) {
+        description = 'You have exceeded your video generation quota. Please try again later.'
+      }
+      
       toast({
         variant: 'destructive',
         title: 'Error',
-        description:
-          'Failed to generate the video. This can happen due to high demand. Please try again later.',
+        description,
       });
     } finally {
       setIsLoading(false);
