@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow to write stories chapter by chapter and generate a book cover.
@@ -10,9 +11,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const GenreEnum = z.enum(['Sci-Fi', 'Fantasy', 'Romance', 'Mystery', 'Thriller']);
+
 // Schema for generating the table of contents
 const TableOfContentsInputSchema = z.object({
   prompt: z.string().describe('The basic idea or plot of the story.'),
+  genre: GenreEnum.describe('The genre of the story.'),
   numChapters: z.number().int().min(1).max(100).describe('The desired number of chapters.'),
   wordsPerChapter: z.number().int().min(50).max(5000).describe('The approximate number of words per chapter.'),
 });
@@ -33,6 +37,7 @@ export type TableOfContentsOutput = z.infer<typeof TableOfContentsOutputSchema>;
 // Schema for writing a single chapter
 const WriteChapterInputSchema = z.object({
     prompt: z.string().describe('The original story prompt.'),
+    genre: GenreEnum.describe('The genre of the story.'),
     tableOfContents: TableOfContentsOutputSchema.describe('The full table of contents and plot summary.'),
     chapterIndex: z.number().int().describe('The index of the chapter to write.'),
     wordsPerChapter: z.number().int().describe('The approximate number of words for this chapter.'),
@@ -49,6 +54,7 @@ export type WriteChapterOutput = z.infer<typeof WriteChapterOutputSchema>;
 const GenerateBookCoverInputSchema = z.object({
     title: z.string().describe('The title of the book.'),
     summary: z.string().describe('The summary of the book plot.'),
+    genre: GenreEnum.describe('The genre of the story.'),
 });
 export type GenerateBookCoverInput = z.infer<typeof GenerateBookCoverInputSchema>;
 
@@ -92,6 +98,8 @@ const tableOfContentsFlow = ai.defineFlow(
       
       Based on their prompt, generate a compelling book title, a detailed plot summary (2-3 paragraphs), and a table of contents for a book with {{{numChapters}}} chapters. Each chapter should be approximately {{{wordsPerChapter}}} words long. For each chapter in the table of contents, provide a title and a brief one-sentence description of the key events.
 
+      The story should fit the '{{{genre}}}' genre.
+
       Story Prompt: {{{prompt}}}
       `,
     });
@@ -114,7 +122,9 @@ const writeChapterFlow = ai.defineFlow(
       output: { schema: WriteChapterOutputSchema },
       prompt: `You are a master storyteller and novelist. Write a full chapter for a book.
       
-      Your writing style should be human-like, engaging, and natural. Vary your sentence structure and word choice to make the prose flow beautifully. Avoid robotic or repetitive phrasing.
+      Your writing style should be human-like, engaging, and natural. Vary your sentence structure and word choice to make the prose flow beautifully. Avoid robotic or repetitive phrasing. The chapter must contain between 5 and 10 paragraphs.
+
+      The story's genre is: ${input.genre}.
 
       Original story prompt: ${input.prompt}
       
@@ -142,11 +152,11 @@ const generateBookCoverFlow = ai.defineFlow(
   async (input) => {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `Generate a visually stunning and professional book cover for a book titled "${input.title}". 
+      prompt: `Generate a visually stunning and professional book cover for a book titled "${input.title}". The book is in the "${input.genre}" genre.
       
       The book's plot is as follows: ${input.summary}. 
       
-      The cover should be dramatic and hint at the main themes of the story. Do not include any text or titles on the image.`,
+      The cover should be dramatic and hint at the main themes of the story without using any text. The imagery should strongly evoke the genre. Do not include any text or titles on the image.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },

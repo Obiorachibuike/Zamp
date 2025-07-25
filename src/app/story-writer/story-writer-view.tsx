@@ -19,6 +19,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -39,9 +46,12 @@ import { useState, type FormEvent } from 'react';
 
 type Stage = 'SETUP' | 'OUTLINE' | 'WRITING';
 
+const genres = ['Sci-Fi', 'Fantasy', 'Romance', 'Mystery', 'Thriller'];
+
 export function StoryWriterView() {
   // Setup State
   const [prompt, setPrompt] = useState('');
+  const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
   const [wordsPerChapter, setWordsPerChapter] = useState(5000);
   
@@ -68,7 +78,7 @@ export function StoryWriterView() {
     setStage('SETUP');
 
     try {
-      const result = await generateTableOfContents({ prompt, numChapters, wordsPerChapter });
+      const result = await generateTableOfContents({ prompt, genre, numChapters, wordsPerChapter });
       setToc(result);
       setStage('OUTLINE');
     } catch (error) {
@@ -96,7 +106,7 @@ export function StoryWriterView() {
     setCurrentChapter(chapterIndex);
 
     try {
-        const result = await writeChapter({ prompt, tableOfContents: toc, chapterIndex, wordsPerChapter });
+        const result = await writeChapter({ prompt, genre, tableOfContents: toc, chapterIndex, wordsPerChapter });
         setChapterContent(result.chapterContent);
     } catch (error) {
         console.error('Error writing chapter:', error);
@@ -115,7 +125,7 @@ export function StoryWriterView() {
     setIsCoverLoading(true);
     setBookCoverUrl('');
     try {
-      const result = await generateBookCover({ title: toc.title, summary: toc.plotSummary });
+      const result = await generateBookCover({ title: toc.title, summary: toc.plotSummary, genre: genre as any });
       setBookCoverUrl(result.image);
     } catch (error) {
        console.error('Error generating book cover:', error);
@@ -162,6 +172,25 @@ export function StoryWriterView() {
                 />
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                    <Label htmlFor="genre-select">Genre</Label>
+                    <Select
+                        value={genre}
+                        onValueChange={setGenre}
+                        disabled={isTocLoading}
+                    >
+                        <SelectTrigger id="genre-select">
+                        <SelectValue placeholder="Select a genre" />
+                        </SelectTrigger>
+                        <SelectContent>
+                        {genres.map((g) => (
+                            <SelectItem key={g} value={g}>
+                            {g}
+                            </SelectItem>
+                        ))}
+                        </SelectContent>
+                    </Select>
+                </div>
                  <div className="space-y-2">
                   <Label htmlFor="num-chapters">
                     Number of Chapters: {numChapters}
@@ -174,7 +203,8 @@ export function StoryWriterView() {
                     disabled={isTocLoading}
                   />
                 </div>
-                 <div className="space-y-2">
+              </div>
+               <div className="space-y-2">
                   <Label htmlFor="words-per-chapter">
                     Words per Chapter (approx.): {wordsPerChapter}
                   </Label>
@@ -186,7 +216,6 @@ export function StoryWriterView() {
                     disabled={isTocLoading}
                   />
                 </div>
-              </div>
               <Button type="submit" disabled={isTocLoading || !prompt.trim()}>
                 {isTocLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Generate Outline
