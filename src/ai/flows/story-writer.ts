@@ -127,7 +127,7 @@ const writeChapterFlow = ai.defineFlow(
       output: { schema: WriteChapterOutputSchema },
       prompt: `You are a master storyteller and novelist. Write a full chapter for a book.
       
-      Your writing style should be human-like, engaging, and natural. Vary your sentence structure and word choice to make the prose flow beautifully. Avoid robotic or repetitive phrasing. The chapter must contain between 5 and 10 paragraphs.
+      Your writing style should be engaging and natural. Vary your sentence structure and word choice to make the prose flow beautifully. Avoid robotic or repetitive phrasing. The chapter must contain between 5 and 10 paragraphs.
 
       The story's genre is: ${input.genre}.
 
@@ -163,7 +163,7 @@ const generateBookCoverFlow = ai.defineFlow(
       
       The book's plot is as follows: ${input.summary}. 
       
-      The cover should be dramatic and hint at the main themes of the story without using any text. The imagery should strongly evoke the genre. Do not include any text or titles on the image.`,
+      The cover should be dramatic and hint at the main themes of the story. The imagery should strongly evoke the genre. Do not include any text or titles on the image.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },
