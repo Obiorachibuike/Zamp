@@ -25,6 +25,7 @@ import {
   Edit,
   Share2,
   Feather,
+  Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -46,6 +47,11 @@ const menuItems = [
   { href: '/grammar-checker', label: 'Grammar Checker', icon: <FileCheck /> },
   { href: '/code-generator', label: 'Code Generator', icon: <Code2 /> },
   { href: '/video-generator', label: 'Video Generator', icon: <Video /> },
+  {
+    href: '/youtube-transcriber',
+    label: 'YouTube Transcriber',
+    icon: <Youtube />,
+  },
   {
     href: '/background-remover',
     label: 'Background Remover',

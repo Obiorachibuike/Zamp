@@ -30,6 +30,7 @@ import {
   Edit,
   Share2,
   Feather,
+  Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -87,6 +88,12 @@ const tools = [
     description: 'Create a short video from a text description.',
     href: '/video-generator',
     icon: <Video className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'YouTube Transcriber',
+    description: 'Get the transcript from any YouTube video.',
+    href: '/youtube-transcriber',
+    icon: <Youtube className="h-8 w-8 text-primary" />,
   },
   {
     title: 'Background Remover',
