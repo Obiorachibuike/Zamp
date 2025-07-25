@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -42,7 +43,7 @@ export function StoryWriterView() {
   // Setup State
   const [prompt, setPrompt] = useState('');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(500);
+  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');
