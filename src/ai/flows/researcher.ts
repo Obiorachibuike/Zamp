@@ -17,7 +17,7 @@ export type ResearchTopicInput = z.infer<typeof ResearchTopicInputSchema>;
 
 const LinkSchema = z.object({
   title: z.string().describe('The title of the web page.'),
-  url: z.string().url().describe('The URL of the web page.'),
+  url: z.string().describe('The URL of the web page.'),
   snippet: z.string().describe('A short snippet or description of the content.'),
 });
 
