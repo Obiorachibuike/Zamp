@@ -24,6 +24,7 @@ import {
   Wand,
   HelpCircle,
   TrendingUp,
+  Reply,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -123,6 +124,12 @@ const tools = [
     description: 'Create quizzes from any block of text.',
     href: '/quiz-generator',
     icon: <HelpCircle className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Email Reply Generator',
+    description: 'Generate smart replies to your emails.',
+    href: '/email-reply-generator',
+    icon: <Reply className="h-8 w-8 text-primary" />,
   },
 ];
 

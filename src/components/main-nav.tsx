@@ -20,6 +20,7 @@ import {
   Wand,
   HelpCircle,
   TrendingUp,
+  Reply,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -75,6 +76,11 @@ const menuItems = [
     href: '/quiz-generator',
     label: 'Quiz Generator',
     icon: <HelpCircle />,
+  },
+  {
+    href: '/email-reply-generator',
+    label: 'Email Reply Generator',
+    icon: <Reply />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
