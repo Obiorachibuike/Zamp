@@ -41,6 +41,7 @@ const WriteChapterInputSchema = z.object({
     tableOfContents: TableOfContentsOutputSchema.describe('The full table of contents and plot summary.'),
     chapterIndex: z.number().int().describe('The index of the chapter to write.'),
     wordsPerChapter: z.number().int().describe('The approximate number of words for this chapter.'),
+    previousChapterContent: z.string().optional().describe('The content of the previous chapter to ensure continuity.'),
 });
 export type WriteChapterInput = z.infer<typeof WriteChapterInputSchema>;
 
@@ -116,6 +117,10 @@ const writeChapterFlow = ai.defineFlow(
   },
   async (input) => {
     const chapterToWrite = input.tableOfContents.chapters[input.chapterIndex];
+    const previousChapterContext = input.previousChapterContent
+      ? `Here is the full text of the previous chapter. Ensure your writing is a direct and seamless continuation of these events:\n\n---\n\n${input.previousChapterContent}\n\n---`
+      : 'This is the first chapter.';
+
 
     const prompt = ai.definePrompt({
       name: 'storyWriteChapterPrompt',
@@ -132,6 +137,8 @@ const writeChapterFlow = ai.defineFlow(
       
       You are now writing Chapter ${input.chapterIndex + 1}: "${chapterToWrite.title}".
       Chapter Description: ${chapterToWrite.description}
+
+      ${previousChapterContext}
 
       The chapter should be detailed, engaging, and approximately ${input.wordsPerChapter} words long. Write only the chapter content, without any titles or introductory phrases like "Chapter X".
       `,

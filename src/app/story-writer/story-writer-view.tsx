@@ -59,7 +59,7 @@ export function StoryWriterView() {
   const [stage, setStage] = useState<Stage>('SETUP');
   const [toc, setToc] = useState<TableOfContentsOutput | null>(null);
   const [currentChapter, setCurrentChapter] = useState(0);
-  const [chapterContent, setChapterContent] = useState('');
+  const [chapterContents, setChapterContents] = useState<Record<number, string>>({});
   const [bookCoverUrl, setBookCoverUrl] = useState('');
 
   // Loading State
@@ -100,14 +100,20 @@ export function StoryWriterView() {
 
   const loadChapter = async (chapterIndex: number) => {
     if (!toc) return;
+
+    // If chapter is already generated, just switch to it.
+    if(chapterContents[chapterIndex]) {
+        setCurrentChapter(chapterIndex);
+        return;
+    }
     
     setIsChapterLoading(true);
-    setChapterContent('');
     setCurrentChapter(chapterIndex);
 
     try {
-        const result = await writeChapter({ prompt, genre, tableOfContents: toc, chapterIndex, wordsPerChapter });
-        setChapterContent(result.chapterContent);
+        const previousChapterContent = chapterContents[chapterIndex - 1];
+        const result = await writeChapter({ prompt, genre, tableOfContents: toc, chapterIndex, wordsPerChapter, previousChapterContent });
+        setChapterContents((prev) => ({...prev, [chapterIndex]: result.chapterContent}));
     } catch (error) {
         console.error('Error writing chapter:', error);
         toast({
@@ -329,7 +335,7 @@ export function StoryWriterView() {
                                     <span>Writing...</span>
                                 </div>
                             ) : (
-                                <p className="whitespace-pre-wrap font-serif text-base leading-relaxed">{chapterContent}</p>
+                                <p className="whitespace-pre-wrap font-serif text-base leading-relaxed">{chapterContents[currentChapter]}</p>
                             )}
                         </ScrollArea>
                     </CardContent>
