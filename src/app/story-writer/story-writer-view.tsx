@@ -46,7 +46,7 @@ import {
   Volume2,
 } from 'lucide-react';
 import NextImage from 'next/image';
-import { useState, type FormEvent, useMemo } from 'react';
+import { useState, type FormEvent, useMemo, useEffect } from 'react';
 
 type Stage = 'SETUP' | 'OUTLINE' | 'WRITING' | 'PREVIEW';
 
@@ -164,8 +164,11 @@ export function StoryWriterView() {
   };
   
   const hasStartedWriting = Object.keys(chapterContents).length > 0;
-  const allChaptersWritten = toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
   
+  const allChaptersWritten = useMemo(() => {
+    return toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
+  }, [toc, chapterContents]);
+
   const fullStoryText = useMemo(() => {
     if (!toc || !allChaptersWritten) return '';
     const storyParts = [
@@ -222,7 +225,7 @@ export function StoryWriterView() {
     } catch (error: any) {
       console.error('Error generating audio:', error);
       let description = 'Failed to create the audio for the story. Please try again.';
-      if (error.message && error.message.includes('quota')) {
+      if (error.message && (error.message.includes('quota') || error.message.includes('rate limit'))) {
         description = 'You have exceeded your Text-to-Speech quota. Please try again later or with a shorter text.'
       }
       toast({
@@ -234,6 +237,14 @@ export function StoryWriterView() {
       setIsAudioLoading(false);
     }
   };
+  
+  useEffect(() => {
+    if (stage === 'PREVIEW' && fullStoryText && !audioUrl && !isAudioLoading) {
+        handleReadAloud();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage, fullStoryText]);
+
 
   return (
     <div className="space-y-8">
@@ -518,14 +529,19 @@ export function StoryWriterView() {
             </CardHeader>
             <CardContent>
                 <div className='mb-4'>
-                    <Button onClick={handleReadAloud} disabled={isAudioLoading}>
-                        {isAudioLoading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
+                    <div className="flex items-center gap-4">
+                        <Button disabled={true} className="w-32">
                             <Volume2 className="mr-2 h-4 w-4" />
+                            Read Aloud
+                        </Button>
+                        {isAudioLoading && (
+                           <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Generating audio...</span>
+                           </div>
                         )}
-                        Read Aloud
-                    </Button>
+                    </div>
+
                     {audioUrl && (
                         <audio
                             src={audioUrl}
