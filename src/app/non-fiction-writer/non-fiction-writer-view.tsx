@@ -129,7 +129,7 @@ export function NonFictionWriterView() {
     setIsCoverLoading(true);
     setBookCoverUrl('');
     try {
-      const result = await generateNonFictionCover({ title: outline.title, description: outline.introduction, genre: genre });
+      const result = await generateNonFictionCover({ title: outline.title, genre: genre });
       setBookCoverUrl(result.image);
     } catch (error) {
        console.error('Error generating book cover:', error);

@@ -53,7 +53,6 @@ export type WriteNonFictionSectionOutput = z.infer<typeof WriteNonFictionSection
 // Schema for generating a book cover
 const GenerateNonFictionCoverInputSchema = z.object({
     title: z.string().describe('The title of the book.'),
-    description: z.string().describe('The description or introduction of the book.'),
     genre: NonFictionGenreEnum.describe('The genre of the work.'),
 });
 export type GenerateNonFictionCoverInput = z.infer<typeof GenerateNonFictionCoverInputSchema>;
@@ -153,15 +152,29 @@ const generateNonFictionCoverFlow = ai.defineFlow(
         outputSchema: GenerateNonFictionCoverOutputSchema,
     },
     async (input) => {
+        // Step 1: Generate a visual description for the cover prompt
+        const descriptionPrompt = ai.definePrompt({
+            name: 'nonFictionCoverDescriptionPrompt',
+            input: { schema: GenerateNonFictionCoverInputSchema },
+            output: { schema: z.object({ visualDescription: z.string() }) },
+            prompt: `You are an expert book cover designer. Based on the book title and genre, create a rich, one-paragraph visual description for an abstract, professional, and modern book cover. The description should capture the essence and themes of the book. Do not include any text in your description.
+
+Title: "{{{title}}}"
+Genre: "{{{genre}}}"`,
+        });
+
+        const { output: descriptionOutput } = await descriptionPrompt(input);
+        if (!descriptionOutput?.visualDescription) {
+            throw new Error('Failed to generate a visual description for the cover.');
+        }
+
+        // Step 2: Generate the image using the visual description
         const { media } = await ai.generate({
             model: 'googleai/gemini-2.0-flash-preview-image-generation',
-            prompt: `Generate a professional, abstract book cover for a non-fiction book titled "${input.title}". 
-            The book is in the "${input.genre}" genre.
+            prompt: `Generate a professional, abstract book cover for a non-fiction book. The cover should be visually appealing, modern, and suitable for the genre. It should hint at the book's main themes. Do not include any text or titles on the image itself.
             
-            Book Description: ${input.description}.
-            
-            The cover should be visually appealing, modern, and suitable for the genre. It should hint at the book's main themes. 
-            Do not include any text or titles on the image itself.`,
+Use this visual description as the primary guide:
+${descriptionOutput.visualDescription}`,
             config: {
                 responseModalities: ['TEXT', 'IMAGE'],
             },
