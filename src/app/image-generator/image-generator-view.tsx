@@ -39,12 +39,16 @@ export function ImageGeneratorView() {
     try {
       const result = await generateImage({ prompt });
       setImageUrl(result.image);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating image:', error);
+      let description = 'Failed to generate the image. Please try again.';
+      if (error.message && error.message.includes('500')) {
+        description = 'The image generation service is currently unavailable. Please try again in a few moments.';
+      }
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to generate the image. Please try again.',
+        description,
       });
     } finally {
       setIsLoading(false);
