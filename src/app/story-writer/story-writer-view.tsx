@@ -7,6 +7,7 @@ import {
   generateBookCover,
   type TableOfContentsOutput,
 } from '@/ai/flows/story-writer';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -42,9 +43,10 @@ import {
   BookImage,
   List,
   Eye,
+  Volume2,
 } from 'lucide-react';
 import NextImage from 'next/image';
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useMemo } from 'react';
 
 type Stage = 'SETUP' | 'OUTLINE' | 'WRITING' | 'PREVIEW';
 
@@ -55,7 +57,7 @@ export function StoryWriterView() {
   const [prompt, setPrompt] = useState('');
   const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(500);
+  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');
@@ -63,11 +65,13 @@ export function StoryWriterView() {
   const [currentChapter, setCurrentChapter] = useState(0);
   const [chapterContents, setChapterContents] = useState<Record<number, string>>({});
   const [bookCoverUrl, setBookCoverUrl] = useState('');
+  const [audioUrl, setAudioUrl] = useState('');
 
   // Loading State
   const [isTocLoading, setIsTocLoading] = useState(false);
   const [isChapterLoading, setIsChapterLoading] = useState(false);
   const [isCoverLoading, setIsCoverLoading] = useState(false);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
   
   const { toast } = useToast();
 
@@ -159,6 +163,19 @@ export function StoryWriterView() {
       }
   };
 
+  const fullStoryText = useMemo(() => {
+    if (!toc || !allChaptersWritten) return '';
+    const storyParts = [
+      `Title: ${toc.title}`,
+      `Plot Summary: ${toc.plotSummary}`,
+    ];
+    toc.chapters.forEach((chapter, index) => {
+      storyParts.push(`Chapter ${index + 1}: ${chapter.title}`);
+      storyParts.push(chapterContents[index] || '');
+    });
+    return storyParts.join('\n\n');
+  }, [toc, chapterContents]);
+
   const handleDownloadStory = () => {
     if (!toc) return;
 
@@ -190,6 +207,25 @@ export function StoryWriterView() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+  
+  const handleReadAloud = async () => {
+    if (!fullStoryText) return;
+    setIsAudioLoading(true);
+    setAudioUrl('');
+    try {
+      const result = await textToSpeech({ text: fullStoryText });
+      setAudioUrl(result.audio);
+    } catch (error) {
+      console.error('Error generating audio:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error generating audio',
+        description: 'Failed to create the audio for the story. Please try again.',
+      });
+    } finally {
+      setIsAudioLoading(false);
+    }
   };
 
   const hasStartedWriting = Object.keys(chapterContents).length > 0;
@@ -478,7 +514,24 @@ export function StoryWriterView() {
                 </div>
             </CardHeader>
             <CardContent>
-                <ScrollArea className="h-[75vh] w-full rounded-md border bg-muted p-4 lg:p-6">
+                <div className='mb-4'>
+                    <Button onClick={handleReadAloud} disabled={isAudioLoading}>
+                        {isAudioLoading ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Volume2 className="mr-2 h-4 w-4" />
+                        )}
+                        Read Aloud
+                    </Button>
+                    {audioUrl && (
+                        <audio
+                            src={audioUrl}
+                            controls
+                            className="mt-4 w-full"
+                        />
+                    )}
+                </div>
+                <ScrollArea className="h-[65vh] w-full rounded-md border bg-muted p-4 lg:p-6">
                     <div className="prose prose-lg mx-auto dark:prose-invert">
                         {bookCoverUrl && (
                             <div className="relative mx-auto mb-8 aspect-[2/3] w-full max-w-sm overflow-hidden rounded-lg shadow-lg">
@@ -508,5 +561,7 @@ export function StoryWriterView() {
     </div>
   );
 }
+
+    
 
     
