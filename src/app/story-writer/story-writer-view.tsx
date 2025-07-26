@@ -40,6 +40,7 @@ import {
   PenSquare,
   Sparkles,
   BookImage,
+  List,
 } from 'lucide-react';
 import NextImage from 'next/image';
 import { useState, type FormEvent } from 'react';
@@ -53,7 +54,7 @@ export function StoryWriterView() {
   const [prompt, setPrompt] = useState('');
   const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
+  const [wordsPerChapter, setWordsPerChapter] = useState(500);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');
@@ -356,7 +357,13 @@ export function StoryWriterView() {
             <div className="lg:col-span-1">
                 <Card className="sticky top-20">
                     <CardHeader>
-                        <CardTitle>{toc.title}</CardTitle>
+                        <div className="flex justify-between items-center">
+                            <CardTitle>{toc.title}</CardTitle>
+                            <Button variant="outline" size="sm" onClick={() => setStage('OUTLINE')}>
+                                <List className="mr-2 h-4 w-4" />
+                                Back to Outline
+                            </Button>
+                        </div>
                         <CardDescription>Table of Contents</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -377,10 +384,10 @@ export function StoryWriterView() {
                        </ScrollArea>
                     </CardContent>
                     {allChaptersWritten && (
-                        <CardFooter className="flex-col gap-2">
+                        <CardFooter>
                             <Button className="w-full" onClick={handleDownloadFullStory}>
                                 <Download className="mr-2 h-4 w-4" />
-                                Download Full Story
+                                Download Full Story (.txt)
                             </Button>
                         </CardFooter>
                      )}
