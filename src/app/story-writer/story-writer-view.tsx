@@ -145,12 +145,16 @@ export function StoryWriterView() {
     try {
       const result = await generateBookCover({ title: toc.title, summary: toc.plotSummary, genre: genre as any });
       setBookCoverUrl(result.image);
-    } catch (error) {
+    } catch (error: any) {
        console.error('Error generating book cover:', error);
+        let description = 'Failed to generate book cover. Please try again.';
+        if (error.message && error.message.includes('500')) {
+            description = 'The image generation service is currently unavailable. Please try again in a few moments.';
+        }
         toast({
             variant: 'destructive',
             title: 'Error',
-            description: 'Failed to generate book cover. Please try again.',
+            description,
         });
     } finally {
         setIsCoverLoading(false);

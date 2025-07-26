@@ -55,12 +55,16 @@ export function ImageEditorView() {
     try {
       const result = await editImage({ photoDataUri: previewUrl, prompt });
       setResultUrl(result.image);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error editing image:', error);
+      let description = 'Failed to edit the image. Please try again.';
+      if (error.message && error.message.includes('500')) {
+        description = 'The image editing service is currently unavailable. Please try again in a few moments.';
+      }
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to edit the image. Please try again.',
+        description,
       });
     } finally {
       setIsLoading(false);

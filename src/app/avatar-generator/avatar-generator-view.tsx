@@ -39,12 +39,16 @@ export function AvatarGeneratorView() {
     try {
       const result = await generateAvatar({ prompt });
       setImageUrl(result.avatar);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating avatar:', error);
+      let description = 'Failed to generate the avatar. Please try again.';
+      if (error.message && error.message.includes('500')) {
+        description = 'The image generation service is currently unavailable. Please try again in a few moments.';
+      }
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to generate the avatar. Please try again.',
+        description,
       });
     } finally {
       setIsLoading(false);

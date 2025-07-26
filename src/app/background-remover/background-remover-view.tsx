@@ -54,12 +54,16 @@ export function BackgroundRemoverView() {
     try {
       const result = await removeBackground({ photoDataUri: previewUrl });
       setResultUrl(result.image);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing background:', error);
+      let description = 'Failed to remove background. Please try again.';
+      if (error.message && error.message.includes('500')) {
+        description = 'The image processing service is currently unavailable. Please try again in a few moments.';
+      }
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to remove background. Please try again.',
+        description,
       });
     } finally {
       setIsLoading(false);
