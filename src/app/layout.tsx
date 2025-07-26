@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
 import { MainNav } from '@/components/main-nav';
 import { SiteHeader } from '@/components/site-header';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'AI Daily Toolkit',
@@ -41,30 +42,37 @@ export default function RootLayout({
         ></link>
       </head>
       <body className="font-body antialiased">
-        <SidebarProvider>
-          <div className="flex min-h-screen">
-            <Sidebar>
-              <SidebarHeader>
-                <Link
-                  href="/"
-                  className="flex items-center gap-2.5"
-                  aria-label="AI Daily Toolkit Home"
-                >
-                  <Sparkles className="h-6 w-6 text-primary" />
-                  <h1 className="font-headline text-lg font-semibold tracking-tight">
-                    AI Daily Toolkit
-                  </h1>
-                </Link>
-              </SidebarHeader>
-              <MainNav />
-            </Sidebar>
-            <SidebarInset>
-              <SiteHeader />
-              <div className="p-4 sm:p-6 lg:p-8">{children}</div>
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider>
+            <div className="flex min-h-screen">
+              <Sidebar>
+                <SidebarHeader>
+                  <Link
+                    href="/"
+                    className="flex items-center gap-2.5"
+                    aria-label="AI Daily Toolkit Home"
+                  >
+                    <Sparkles className="h-6 w-6 text-primary" />
+                    <h1 className="font-headline text-lg font-semibold tracking-tight">
+                      AI Daily Toolkit
+                    </h1>
+                  </Link>
+                </SidebarHeader>
+                <MainNav />
+              </Sidebar>
+              <SidebarInset>
+                <SiteHeader />
+                <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+              </SidebarInset>
+            </div>
+          </SidebarProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
