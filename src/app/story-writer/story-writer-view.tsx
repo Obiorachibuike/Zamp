@@ -57,7 +57,7 @@ export function StoryWriterView() {
   const [prompt, setPrompt] = useState('');
   const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
+  const [wordsPerChapter, setWordsPerChapter] = useState(500);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');
@@ -165,7 +165,7 @@ export function StoryWriterView() {
   
   const hasStartedWriting = Object.keys(chapterContents).length > 0;
   const allChaptersWritten = toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
-
+  
   const fullStoryText = useMemo(() => {
     if (!toc || !allChaptersWritten) return '';
     const storyParts = [
@@ -219,12 +219,16 @@ export function StoryWriterView() {
     try {
       const result = await textToSpeech({ text: fullStoryText });
       setAudioUrl(result.audio);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating audio:', error);
+      let description = 'Failed to create the audio for the story. Please try again.';
+      if (error.message && error.message.includes('quota')) {
+        description = 'You have exceeded your Text-to-Speech quota. Please try again later or with a shorter text.'
+      }
       toast({
         variant: 'destructive',
         title: 'Error generating audio',
-        description: 'Failed to create the audio for the story. Please try again.',
+        description,
       });
     } finally {
       setIsAudioLoading(false);
@@ -560,7 +564,3 @@ export function StoryWriterView() {
     </div>
   );
 }
-
-    
-
-    
