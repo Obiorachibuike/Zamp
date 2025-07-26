@@ -34,6 +34,7 @@ import {
   Search,
   BookOpen,
   Brain,
+  MessageSquareQuote,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -61,6 +62,12 @@ const tools = [
     description: 'Create stunning visuals from text descriptions.',
     href: '/image-generator',
     icon: <Image className="h-8 w-8 text-primary" />,
+  },
+    {
+    title: 'Talking Photo',
+    description: 'Make a character in a photo speak your text.',
+    href: '/talking-photo',
+    icon: <MessageSquareQuote className="h-8 w-8 text-primary" />,
   },
   {
     title: 'AI Avatar Generator',

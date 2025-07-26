@@ -29,6 +29,7 @@ import {
   Search,
   BookOpen,
   Brain,
+  MessageSquareQuote,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -45,6 +46,7 @@ const menuItems = [
   { href: '/summarizer', label: 'Summarizer', icon: <BookText /> },
   { href: '/composer', label: 'Composer', icon: <Mail /> },
   { href: '/image-generator', label: 'Image Generator', icon: <Image /> },
+  { href: '/talking-photo', label: 'Talking Photo', icon: <MessageSquareQuote /> },
   { href: '/avatar-generator', label: 'Avatar Generator', icon: <Smile /> },
   { href: '/image-captioning', label: 'Image Captioning', icon: <Type /> },
   { href: '/grammar-checker', label: 'Grammar Checker', icon: <FileCheck /> },

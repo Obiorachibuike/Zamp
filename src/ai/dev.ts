@@ -1,3 +1,4 @@
+'use server';
 import { config } from 'dotenv';
 config();
 
@@ -26,3 +27,4 @@ import '@/ai/flows/youtube-transcript.ts';
 import '@/ai/flows/researcher.ts';
 import '@/ai/flows/story-writer.ts';
 import '@/ai/flows/non-fiction-writer.ts';
+import '@/ai/flows/talking-photo.ts';
