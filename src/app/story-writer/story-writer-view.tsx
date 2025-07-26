@@ -54,7 +54,7 @@ export function StoryWriterView() {
   const [prompt, setPrompt] = useState('');
   const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(500);
+  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');
@@ -94,9 +94,14 @@ export function StoryWriterView() {
     }
   };
 
-  const startWriting = async () => {
+  const startOrResumeWriting = async () => {
     setStage('WRITING');
-    loadChapter(0);
+    // If no chapters are written, load the first one. Otherwise, go to the current one.
+    if (Object.keys(chapterContents).length === 0) {
+        loadChapter(0);
+    } else {
+        // No action needed, will already be on current chapter
+    }
   };
 
   const loadChapter = async (chapterIndex: number) => {
@@ -153,7 +158,7 @@ export function StoryWriterView() {
       }
   };
 
-  const handleDownloadFullStory = () => {
+  const handleDownloadStory = () => {
     if (!toc) return;
 
     const storyParts = [];
@@ -178,6 +183,7 @@ export function StoryWriterView() {
     URL.revokeObjectURL(url);
   };
 
+  const hasStartedWriting = Object.keys(chapterContents).length > 0;
   const allChaptersWritten = toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
 
 
@@ -344,10 +350,16 @@ export function StoryWriterView() {
                     </Card>
                 </div>
             </CardContent>
-            <CardFooter>
-                <Button onClick={startWriting}>
-                    Start Writing <ArrowRight className="ml-2 h-4 w-4" />
+            <CardFooter className="flex justify-between items-center">
+                <Button onClick={startOrResumeWriting}>
+                    {hasStartedWriting ? "Resume Writing" : "Start Writing"} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
+                {hasStartedWriting && (
+                    <Button variant="outline" onClick={handleDownloadStory}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Download Story (.txt)
+                    </Button>
+                )}
             </CardFooter>
         </Card>
       )}
@@ -385,7 +397,7 @@ export function StoryWriterView() {
                     </CardContent>
                     {allChaptersWritten && (
                         <CardFooter>
-                            <Button className="w-full" onClick={handleDownloadFullStory}>
+                            <Button className="w-full" onClick={handleDownloadStory}>
                                 <Download className="mr-2 h-4 w-4" />
                                 Download Full Story (.txt)
                             </Button>
