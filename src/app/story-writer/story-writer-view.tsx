@@ -66,6 +66,7 @@ export function StoryWriterView() {
   const [chapterContents, setChapterContents] = useState<Record<number, string>>({});
   const [bookCoverUrl, setBookCoverUrl] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
+  const [previewPage, setPreviewPage] = useState(0);
 
   // Loading State
   const [isTocLoading, setIsTocLoading] = useState(false);
@@ -170,19 +171,6 @@ export function StoryWriterView() {
     return Object.keys(chapterContents).length === toc.chapters.length;
   }, [toc, chapterContents]);
 
-  const fullStoryText = useMemo(() => {
-    if (!toc || !allChaptersWritten) return '';
-    const storyParts = [
-      `Title: ${toc.title}`,
-      `Plot Summary: ${toc.plotSummary}`,
-    ];
-    toc.chapters.forEach((chapter, index) => {
-      storyParts.push(`Chapter ${index + 1}: ${chapter.title}`);
-      storyParts.push(chapterContents[index] || '');
-    });
-    return storyParts.join('\n\n');
-  }, [toc, allChaptersWritten, chapterContents]);
-
   const handleDownloadStory = () => {
     if (!toc) return;
 
@@ -217,32 +205,37 @@ export function StoryWriterView() {
   };
   
   const handleReadAloud = async () => {
-    if (!toc || !chapterContents[0]) {
+    if (!toc) return;
+    
+    let textToRead = '';
+    if (previewPage === 0) {
+        textToRead = `Title: ${toc.title}. Plot Summary: ${toc.plotSummary}`;
+    } else {
+        const chapterIndex = previewPage - 1;
+        if (chapterContents[chapterIndex]) {
+            textToRead = `Chapter ${chapterIndex + 1}: ${toc.chapters[chapterIndex].title}. ${chapterContents[chapterIndex]}`;
+        }
+    }
+
+    if (!textToRead) {
         toast({
             variant: 'destructive',
-            title: 'Cannot generate audio',
-            description: 'The first chapter must be generated to create an audio preview.',
+            title: 'No content to read',
+            description: 'The content for this page has not been generated yet.',
         });
         return;
     }
-    
-    const audioPreviewText = [
-        `Title: ${toc.title}`,
-        `Plot Summary: ${toc.plotSummary}`,
-        `Chapter 1: ${toc.chapters[0].title}`,
-        chapterContents[0]
-    ].join('\n\n');
 
     setIsAudioLoading(true);
     setAudioUrl('');
     
     toast({
-        title: 'Generating Audio Preview',
-        description: "This will read the title, summary, and first chapter aloud."
+        title: 'Generating Audio',
+        description: "Please wait while the audio for the current page is being generated."
     });
 
     try {
-      const result = await textToSpeech({ text: audioPreviewText });
+      const result = await textToSpeech({ text: textToRead });
       setAudioUrl(result.audio);
     } catch (error: any) {
       console.error('Error generating audio:', error);
@@ -260,6 +253,11 @@ export function StoryWriterView() {
     }
   };
   
+  // Reset audio when preview page changes
+  useEffect(() => {
+    setAudioUrl('');
+  }, [previewPage]);
+
   return (
     <div className="space-y-8">
       <header className="space-y-1.5">
@@ -531,7 +529,7 @@ export function StoryWriterView() {
                         <CardTitle>{toc.title}</CardTitle>
                         <CardDescription>Full Story Preview</CardDescription>
                     </div>
-                    <div className="flex gap-2">
+                     <div className="flex gap-2">
                          <Button variant="outline" onClick={() => setStage('WRITING')}>
                            <PenSquare className="mr-2 h-4 w-4" /> Back to Writing
                         </Button>
@@ -542,53 +540,67 @@ export function StoryWriterView() {
                 </div>
             </CardHeader>
             <CardContent>
-                <div className='mb-4'>
-                    <div className="flex items-center gap-4">
-                        <Button onClick={handleReadAloud} disabled={isAudioLoading}>
-                            {isAudioLoading ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                                <Volume2 className="mr-2 h-4 w-4" />
-                            )}
-                            Read Aloud Preview
-                        </Button>
+                 <ScrollArea className="h-[65vh] w-full rounded-md border bg-muted p-4 lg:p-6">
+                    <div className="prose prose-lg mx-auto max-w-none dark:prose-invert">
+                        {previewPage === 0 && (
+                            <>
+                                {bookCoverUrl && (
+                                    <div className="relative mx-auto mb-8 aspect-[2/3] w-full max-w-sm overflow-hidden rounded-lg shadow-lg">
+                                        <NextImage
+                                            src={bookCoverUrl}
+                                            alt={`Book cover for ${toc.title}`}
+                                            layout="fill"
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                )}
+                                <h1 className="font-bold text-3xl">{toc.title}</h1>
+                                <p className="italic text-muted-foreground">{toc.plotSummary}</p>
+                            </>
+                        )}
+                        {previewPage > 0 && (
+                             <section>
+                                <h2 className="font-bold text-2xl mt-8">Chapter {previewPage}: {toc.chapters[previewPage - 1].title}</h2>
+                                <p className="whitespace-pre-wrap font-serif text-base leading-relaxed">{chapterContents[previewPage - 1] || '(Content not generated)'}</p>
+                            </section>
+                        )}
                     </div>
-
+                 </ScrollArea>
+            </CardContent>
+            <CardFooter className="flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                    <Button onClick={() => setPreviewPage(p => p - 1)} disabled={previewPage === 0}>
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Previous Page
+                    </Button>
+                    <span>Page {previewPage + 1} of {toc.chapters.length + 1}</span>
+                    <Button onClick={() => setPreviewPage(p => p + 1)} disabled={previewPage === toc.chapters.length}>
+                        Next Page <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+                <div>
+                     <Button onClick={handleReadAloud} disabled={isAudioLoading}>
+                        {isAudioLoading ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Volume2 className="mr-2 h-4 w-4" />
+                        )}
+                        Read Page Aloud
+                    </Button>
                     {audioUrl && (
                         <audio
                             src={audioUrl}
                             controls
+                            autoPlay
                             className="mt-4 w-full"
                         />
                     )}
                 </div>
-                <ScrollArea className="h-[65vh] w-full rounded-md border bg-muted p-4 lg:p-6">
-                    <div className="prose prose-lg mx-auto dark:prose-invert">
-                        {bookCoverUrl && (
-                            <div className="relative mx-auto mb-8 aspect-[2/3] w-full max-w-sm overflow-hidden rounded-lg shadow-lg">
-                                <NextImage
-                                    src={bookCoverUrl}
-                                    alt={`Book cover for ${toc.title}`}
-                                    layout="fill"
-                                    className="object-cover"
-                                />
-                            </div>
-                        )}
-                        <h1 className="font-bold text-3xl">{toc.title}</h1>
-                        <p className="italic text-muted-foreground">{toc.plotSummary}</p>
-                        <hr />
-                        {toc.chapters.map((chapter, index) => (
-                            <section key={index}>
-                                <h2 className="font-bold text-2xl mt-8">Chapter {index + 1}: {chapter.title}</h2>
-                                <p className="whitespace-pre-wrap font-serif text-base leading-relaxed">{chapterContents[index] || '(Content not generated)'}</p>
-                            </section>
-                        ))}
-                    </div>
-                </ScrollArea>
-            </CardContent>
+            </CardFooter>
         </Card>
       )}
 
     </div>
   );
 }
+
+    
