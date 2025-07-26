@@ -217,11 +217,32 @@ export function StoryWriterView() {
   };
   
   const handleReadAloud = async () => {
-    if (!fullStoryText) return;
+    if (!toc || !chapterContents[0]) {
+        toast({
+            variant: 'destructive',
+            title: 'Cannot generate audio',
+            description: 'The first chapter must be generated to create an audio preview.',
+        });
+        return;
+    }
+    
+    const audioPreviewText = [
+        `Title: ${toc.title}`,
+        `Plot Summary: ${toc.plotSummary}`,
+        `Chapter 1: ${toc.chapters[0].title}`,
+        chapterContents[0]
+    ].join('\n\n');
+
     setIsAudioLoading(true);
     setAudioUrl('');
+    
+    toast({
+        title: 'Generating Audio Preview',
+        description: "This will read the title, summary, and first chapter aloud."
+    });
+
     try {
-      const result = await textToSpeech({ text: fullStoryText });
+      const result = await textToSpeech({ text: audioPreviewText });
       setAudioUrl(result.audio);
     } catch (error: any) {
       console.error('Error generating audio:', error);
@@ -529,7 +550,7 @@ export function StoryWriterView() {
                             ) : (
                                 <Volume2 className="mr-2 h-4 w-4" />
                             )}
-                            Read Aloud
+                            Read Aloud Preview
                         </Button>
                     </div>
 
