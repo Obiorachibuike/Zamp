@@ -41,11 +41,12 @@ import {
   Sparkles,
   BookImage,
   List,
+  Eye,
 } from 'lucide-react';
 import NextImage from 'next/image';
 import { useState, type FormEvent } from 'react';
 
-type Stage = 'SETUP' | 'OUTLINE' | 'WRITING';
+type Stage = 'SETUP' | 'OUTLINE' | 'WRITING' | 'PREVIEW';
 
 const genres = ['Sci-Fi', 'Fantasy', 'Romance', 'Mystery', 'Thriller', 'Horror', 'Adventure', 'Historical Fiction', 'Comedy', 'Dystopian', 'Young Adult'];
 
@@ -163,7 +164,15 @@ export function StoryWriterView() {
 
     const storyParts = [];
     storyParts.push(`Title: ${toc.title}\n\n`);
+    storyParts.push(`Genre: ${genre}\n\n`);
     storyParts.push(`Plot Summary:\n${toc.plotSummary}\n\n`);
+    storyParts.push(`--- Table of Contents ---\n`);
+    toc.chapters.forEach((chapter, index) => {
+        storyParts.push(`${index + 1}. ${chapter.title}`);
+        storyParts.push(`   ${chapter.description}`);
+    });
+    storyParts.push('\n\n');
+
 
     toc.chapters.forEach((chapter, index) => {
       storyParts.push(`--- Chapter ${index + 1}: ${chapter.title} ---\n\n`);
@@ -371,10 +380,18 @@ export function StoryWriterView() {
                     <CardHeader>
                         <div className="flex justify-between items-center">
                             <CardTitle>{toc.title}</CardTitle>
-                            <Button variant="outline" size="sm" onClick={() => setStage('OUTLINE')}>
-                                <List className="mr-2 h-4 w-4" />
-                                Back to Outline
-                            </Button>
+                             <div className="flex gap-2">
+                                <Button variant="outline" size="sm" onClick={() => setStage('OUTLINE')}>
+                                    <List className="mr-2 h-4 w-4" />
+                                    Outline
+                                </Button>
+                                {allChaptersWritten && (
+                                    <Button variant="outline" size="sm" onClick={() => setStage('PREVIEW')}>
+                                        <Eye className="mr-2 h-4 w-4" />
+                                        Preview
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                         <CardDescription>Table of Contents</CardDescription>
                     </CardHeader>
@@ -397,9 +414,9 @@ export function StoryWriterView() {
                     </CardContent>
                     {allChaptersWritten && (
                         <CardFooter>
-                            <Button className="w-full" onClick={handleDownloadStory}>
-                                <Download className="mr-2 h-4 w-4" />
-                                Download Full Story (.txt)
+                            <Button className="w-full" onClick={() => setStage('PREVIEW')}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                Preview Full Story
                             </Button>
                         </CardFooter>
                      )}
@@ -427,13 +444,55 @@ export function StoryWriterView() {
                          <Button onClick={() => loadChapter(currentChapter - 1)} disabled={isChapterLoading || currentChapter === 0}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Previous Chapter
                         </Button>
-                        <Button onClick={() => loadChapter(currentChapter + 1)} disabled={isChapterLoading || currentChapter === toc.chapters.length - 1}>
-                           Next Chapter <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
+                        {currentChapter < toc.chapters.length - 1 ? (
+                            <Button onClick={() => loadChapter(currentChapter + 1)} disabled={isChapterLoading}>
+                                Next Chapter <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        ) : (
+                             <Button onClick={() => setStage('PREVIEW')} disabled={isChapterLoading}>
+                                Preview Story <Eye className="ml-2 h-4 w-4" />
+                            </Button>
+                        )}
                     </CardFooter>
                 </Card>
             </div>
         </div>
+      )}
+
+      {stage === 'PREVIEW' && toc && (
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>{toc.title}</CardTitle>
+                        <CardDescription>Full Story Preview</CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                         <Button variant="outline" onClick={() => setStage('WRITING')}>
+                           <PenSquare className="mr-2 h-4 w-4" /> Back to Writing
+                        </Button>
+                        <Button onClick={handleDownloadStory}>
+                            <Download className="mr-2 h-4 w-4" /> Download (.txt)
+                        </Button>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <ScrollArea className="h-[75vh] w-full rounded-md border bg-muted p-4 lg:p-6">
+                    <div className="prose prose-lg mx-auto dark:prose-invert">
+                        <h1 className="font-bold text-3xl">{toc.title}</h1>
+                        <p className="italic text-muted-foreground">{toc.plotSummary}</p>
+                        <hr />
+                        {toc.chapters.map((chapter, index) => (
+                            <section key={index}>
+                                <h2 className="font-bold text-2xl mt-8">Chapter {index + 1}: {chapter.title}</h2>
+                                <p className="whitespace-pre-wrap font-serif text-base leading-relaxed">{chapterContents[index] || '(Content not generated)'}</p>
+                            </section>
+                        ))}
+                    </div>
+                </ScrollArea>
+            </CardContent>
+        </Card>
       )}
 
     </div>
