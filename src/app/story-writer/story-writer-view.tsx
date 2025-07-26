@@ -7,7 +7,6 @@ import {
   generateBookCover,
   type TableOfContentsOutput,
 } from '@/ai/flows/story-writer';
-import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -33,16 +32,16 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft,
   ArrowRight,
+  BookImage,
   BookOpen,
-  ChevronRight,
   Download,
+  Eye,
   ImageIcon,
+  List,
   Loader2,
   PenSquare,
   Sparkles,
-  BookImage,
-  List,
-  Eye,
+  Square,
   Volume2,
 } from 'lucide-react';
 import NextImage from 'next/image';
@@ -65,14 +64,17 @@ export function StoryWriterView() {
   const [currentChapter, setCurrentChapter] = useState(0);
   const [chapterContents, setChapterContents] = useState<Record<number, string>>({});
   const [bookCoverUrl, setBookCoverUrl] = useState('');
-  const [audioUrl, setAudioUrl] = useState('');
   const [previewPage, setPreviewPage] = useState(0);
 
   // Loading State
   const [isTocLoading, setIsTocLoading] = useState(false);
   const [isChapterLoading, setIsChapterLoading] = useState(false);
   const [isCoverLoading, setIsCoverLoading] = useState(false);
-  const [isAudioLoading, setIsAudioLoading] = useState(false);
+  
+  // Client-side TTS State
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-1);
+  const [currentTextWords, setCurrentTextWords] = useState<string[]>([]);
   
   const { toast } = useToast();
 
@@ -189,7 +191,6 @@ export function StoryWriterView() {
     });
     storyParts.push('\n\n');
 
-
     toc.chapters.forEach((chapter, index) => {
       storyParts.push(`--- Chapter ${index + 1}: ${chapter.title} ---\n\n`);
       storyParts.push(chapterContents[index] || '(Content not generated)');
@@ -208,68 +209,95 @@ export function StoryWriterView() {
     URL.revokeObjectURL(url);
   };
   
-  const handleReadAloud = async () => {
-    if (!toc) return;
-    
-    let textToRead = '';
+    const currentText = useMemo(() => {
+    if (!toc) return '';
     if (previewPage === 0) {
-        textToRead = `Title: ${toc.title}. Plot Summary: ${toc.plotSummary}`;
-    } else {
-        const chapterIndex = previewPage - 1;
-        if (chapterContents[chapterIndex]) {
-            textToRead = `Chapter ${chapterIndex + 1}: ${toc.chapters[chapterIndex].title}. ${chapterContents[chapterIndex]}`;
-        }
+      return `Title: ${toc.title}. Plot Summary: ${toc.plotSummary}`;
+    }
+    const chapterIndex = previewPage - 1;
+    return chapterContents[chapterIndex] || '';
+  }, [toc, previewPage, chapterContents]);
+
+  // Handle client-side TTS
+  const handleReadAloud = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setCurrentWordIndex(-1);
+      return;
     }
 
-    if (!textToRead) {
-        toast({
-            variant: 'destructive',
-            title: 'No content to read',
-            description: 'The content for this page has not been generated yet.',
-        });
-        return;
-    }
-
-    setIsAudioLoading(true);
-    setAudioUrl('');
-    
-    const wasTruncated = textToRead.length > 1500;
-    const truncatedText = wasTruncated ? textToRead.substring(0, 1500) : textToRead;
-
-    toast({
-        title: 'Generating Audio',
-        description: "Please wait while the audio for the current page is being generated."
-    });
-
-    try {
-      const result = await textToSpeech({ text: truncatedText });
-      setAudioUrl(result.audio);
-      if (wasTruncated) {
-        toast({
-            title: 'Audio Preview Generated',
-            description: 'The audio is a preview of the beginning of the page.',
-        });
-      }
-    } catch (error: any) {
-      console.error('Error generating audio:', error);
-      let description = 'Failed to create the audio for the story. Please try again.';
-      if (error.message && (error.message.includes('quota') || error.message.includes('rate limit'))) {
-        description = 'You have exceeded your Text-to-Speech quota. Please try again later or with a shorter text.'
-      }
+    if (!currentText) {
       toast({
         variant: 'destructive',
-        title: 'Error generating audio',
-        description,
+        title: 'No content to read',
+        description: 'The content for this page has not been generated yet.',
       });
-    } finally {
-      setIsAudioLoading(false);
+      return;
     }
+
+    const words = currentText.split(/\s+/);
+    setCurrentTextWords(words);
+
+    const utterance = new SpeechSynthesisUtterance(currentText);
+    let wordIdx = 0;
+
+    utterance.onboundary = (event) => {
+        if (event.name === 'word') {
+            // Find which word in the original text corresponds to the boundary
+            const textUpToBoundary = currentText.substring(0, event.charIndex);
+            const spokenWords = textUpToBoundary.split(/\s+/).length - 1;
+            setCurrentWordIndex(spokenWords);
+        }
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setCurrentWordIndex(-1);
+    };
+    
+    utterance.onerror = (event) => {
+      toast({
+        variant: 'destructive',
+        title: 'Speech Error',
+        description: `An error occurred during speech synthesis: ${event.error}`,
+      });
+      setIsSpeaking(false);
+      setCurrentWordIndex(-1);
+    };
+
+    window.speechSynthesis.speak(utterance);
+    setIsSpeaking(true);
   };
-  
-  // Reset audio when preview page changes
+
+  // Cleanup speech synthesis on component unmount or page change
   useEffect(() => {
-    setAudioUrl('');
+    return () => {
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [isSpeaking]);
+
+  useEffect(() => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+    setCurrentWordIndex(-1);
   }, [previewPage]);
+  
+  const renderHighlightedText = () => {
+    return currentTextWords.map((word, index) => (
+      <span
+        key={index}
+        className={
+          index === currentWordIndex ? 'bg-primary/30 rounded' : ''
+        }
+      >
+        {word}{' '}
+      </span>
+    ));
+  };
+
 
   return (
     <div className="space-y-8">
@@ -568,13 +596,17 @@ export function StoryWriterView() {
                                     </div>
                                 )}
                                 <h1 className="font-bold text-3xl">{toc.title}</h1>
-                                <p className="italic text-muted-foreground">{toc.plotSummary}</p>
+                                <p className="italic text-muted-foreground">
+                                    {isSpeaking ? renderHighlightedText() : toc.plotSummary}
+                                </p>
                             </>
                         )}
                         {previewPage > 0 && (
                              <section>
                                 <h2 className="font-bold text-2xl mt-8">Chapter {previewPage}: {toc.chapters[previewPage - 1].title}</h2>
-                                <p className="whitespace-pre-wrap font-serif text-base leading-relaxed">{chapterContents[previewPage - 1] || '(Content not generated)'}</p>
+                                <p className="whitespace-pre-wrap font-serif text-base leading-relaxed">
+                                    {isSpeaking ? renderHighlightedText() : chapterContents[previewPage - 1] || '(Content not generated)'}
+                                </p>
                             </section>
                         )}
                     </div>
@@ -590,23 +622,15 @@ export function StoryWriterView() {
                         Next Page <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                     <Button onClick={handleReadAloud} disabled={isAudioLoading}>
-                        {isAudioLoading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <div className="flex items-center gap-2">
+                     <Button onClick={handleReadAloud} disabled={!currentText}>
+                        {isSpeaking ? (
+                            <Square className="mr-2 h-4 w-4" />
                         ) : (
                             <Volume2 className="mr-2 h-4 w-4" />
                         )}
-                        Read Page Aloud
+                        {isSpeaking ? 'Stop Reading' : 'Read Page Aloud'}
                     </Button>
-                    {audioUrl && (
-                        <audio
-                            src={audioUrl}
-                            controls
-                            autoPlay
-                            className="w-full max-w-xs"
-                        />
-                    )}
                 </div>
             </CardFooter>
         </Card>
