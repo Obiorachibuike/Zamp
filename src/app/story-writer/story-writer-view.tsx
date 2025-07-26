@@ -166,7 +166,8 @@ export function StoryWriterView() {
   const hasStartedWriting = Object.keys(chapterContents).length > 0;
   
   const allChaptersWritten = useMemo(() => {
-    return toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
+    if (!toc) return false;
+    return Object.keys(chapterContents).length === toc.chapters.length;
   }, [toc, chapterContents]);
 
   const fullStoryText = useMemo(() => {
@@ -180,7 +181,7 @@ export function StoryWriterView() {
       storyParts.push(chapterContents[index] || '');
     });
     return storyParts.join('\n\n');
-  }, [toc, chapterContents, allChaptersWritten]);
+  }, [toc, allChaptersWritten, chapterContents]);
 
   const handleDownloadStory = () => {
     if (!toc) return;
@@ -238,14 +239,6 @@ export function StoryWriterView() {
     }
   };
   
-  useEffect(() => {
-    if (stage === 'PREVIEW' && fullStoryText && !audioUrl && !isAudioLoading) {
-        handleReadAloud();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stage, fullStoryText]);
-
-
   return (
     <div className="space-y-8">
       <header className="space-y-1.5">
@@ -530,16 +523,14 @@ export function StoryWriterView() {
             <CardContent>
                 <div className='mb-4'>
                     <div className="flex items-center gap-4">
-                        <Button disabled={true} className="w-32">
-                            <Volume2 className="mr-2 h-4 w-4" />
+                        <Button onClick={handleReadAloud} disabled={isAudioLoading}>
+                            {isAudioLoading ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Volume2 className="mr-2 h-4 w-4" />
+                            )}
                             Read Aloud
                         </Button>
-                        {isAudioLoading && (
-                           <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                <span>Generating audio...</span>
-                           </div>
-                        )}
                     </div>
 
                     {audioUrl && (
