@@ -233,14 +233,23 @@ export function StoryWriterView() {
     setIsAudioLoading(true);
     setAudioUrl('');
     
+    const wasTruncated = textToRead.length > 1500;
+    const truncatedText = wasTruncated ? textToRead.substring(0, 1500) : textToRead;
+
     toast({
         title: 'Generating Audio',
         description: "Please wait while the audio for the current page is being generated."
     });
 
     try {
-      const result = await textToSpeech({ text: textToRead });
+      const result = await textToSpeech({ text: truncatedText });
       setAudioUrl(result.audio);
+      if (wasTruncated) {
+        toast({
+            title: 'Audio Preview Generated',
+            description: 'The audio is a preview of the beginning of the page.',
+        });
+      }
     } catch (error: any) {
       console.error('Error generating audio:', error);
       let description = 'Failed to create the audio for the story. Please try again.';
