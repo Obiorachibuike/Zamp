@@ -577,7 +577,7 @@ export function StoryWriterView() {
                         Next Page <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </div>
-                <div>
+                <div className="flex flex-col items-end gap-2">
                      <Button onClick={handleReadAloud} disabled={isAudioLoading}>
                         {isAudioLoading ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -591,7 +591,7 @@ export function StoryWriterView() {
                             src={audioUrl}
                             controls
                             autoPlay
-                            className="mt-4 w-full"
+                            className="w-full max-w-xs"
                         />
                     )}
                 </div>
@@ -602,5 +602,3 @@ export function StoryWriterView() {
     </div>
   );
 }
-
-    
