@@ -55,7 +55,7 @@ export function StoryWriterView() {
   const [prompt, setPrompt] = useState('');
   const [genre, setGenre] = useState('Fantasy');
   const [numChapters, setNumChapters] = useState(5);
-  const [wordsPerChapter, setWordsPerChapter] = useState(5000);
+  const [wordsPerChapter, setWordsPerChapter] = useState(500);
   
   // Data State
   const [stage, setStage] = useState<Stage>('SETUP');
@@ -480,6 +480,16 @@ export function StoryWriterView() {
             <CardContent>
                 <ScrollArea className="h-[75vh] w-full rounded-md border bg-muted p-4 lg:p-6">
                     <div className="prose prose-lg mx-auto dark:prose-invert">
+                        {bookCoverUrl && (
+                            <div className="relative mx-auto mb-8 aspect-[2/3] w-full max-w-sm overflow-hidden rounded-lg shadow-lg">
+                                <NextImage
+                                    src={bookCoverUrl}
+                                    alt={`Book cover for ${toc.title}`}
+                                    layout="fill"
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                         <h1 className="font-bold text-3xl">{toc.title}</h1>
                         <p className="italic text-muted-foreground">{toc.plotSummary}</p>
                         <hr />
@@ -498,3 +508,5 @@ export function StoryWriterView() {
     </div>
   );
 }
+
+    
