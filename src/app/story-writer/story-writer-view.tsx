@@ -152,6 +152,34 @@ export function StoryWriterView() {
       }
   };
 
+  const handleDownloadFullStory = () => {
+    if (!toc) return;
+
+    const storyParts = [];
+    storyParts.push(`Title: ${toc.title}\n\n`);
+    storyParts.push(`Plot Summary:\n${toc.plotSummary}\n\n`);
+
+    toc.chapters.forEach((chapter, index) => {
+      storyParts.push(`--- Chapter ${index + 1}: ${chapter.title} ---\n\n`);
+      storyParts.push(chapterContents[index] || '(Content not generated)');
+      storyParts.push('\n\n');
+    });
+
+    const fullStory = storyParts.join('');
+    const blob = new Blob([fullStory], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${toc.title.replace(/ /g, '_')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const allChaptersWritten = toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
+
+
   return (
     <div className="space-y-8">
       <header className="space-y-1.5">
@@ -348,6 +376,14 @@ export function StoryWriterView() {
                         </div>
                        </ScrollArea>
                     </CardContent>
+                    {allChaptersWritten && (
+                        <CardFooter className="flex-col gap-2">
+                            <Button className="w-full" onClick={handleDownloadFullStory}>
+                                <Download className="mr-2 h-4 w-4" />
+                                Download Full Story
+                            </Button>
+                        </CardFooter>
+                     )}
                 </Card>
             </div>
             <div className="lg:col-span-2">
