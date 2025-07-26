@@ -162,6 +162,9 @@ export function StoryWriterView() {
           toast({ title: "Title Updated", description: `Your story's title is now "${newTitle}".` });
       }
   };
+  
+  const hasStartedWriting = Object.keys(chapterContents).length > 0;
+  const allChaptersWritten = toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
 
   const fullStoryText = useMemo(() => {
     if (!toc || !allChaptersWritten) return '';
@@ -174,7 +177,7 @@ export function StoryWriterView() {
       storyParts.push(chapterContents[index] || '');
     });
     return storyParts.join('\n\n');
-  }, [toc, chapterContents]);
+  }, [toc, chapterContents, allChaptersWritten]);
 
   const handleDownloadStory = () => {
     if (!toc) return;
@@ -227,10 +230,6 @@ export function StoryWriterView() {
       setIsAudioLoading(false);
     }
   };
-
-  const hasStartedWriting = Object.keys(chapterContents).length > 0;
-  const allChaptersWritten = toc ? Object.keys(chapterContents).length === toc.chapters.length : false;
-
 
   return (
     <div className="space-y-8">
