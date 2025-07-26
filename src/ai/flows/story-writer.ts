@@ -136,16 +136,19 @@ const writeChapterFlow = ai.defineFlow(
       output: { schema: WriteChapterOutputSchema },
       prompt: `You are a master storyteller and novelist. Write a full chapter for a book.
       
-      Your writing style should be engaging and natural. Vary your sentence structure and word choice to make the prose flow beautifully. Avoid robotic or repetitive phrasing. The chapter must contain between 5 and 10 paragraphs.
+      The writing must be high-quality, engaging, and natural. Vary your sentence structure and word choice to make the prose flow beautifully. Avoid robotic or repetitive phrasing. The chapter must contain between 5 and 10 paragraphs.
 
       The story's genre is: ${input.genre}.
 
       Original story prompt: ${input.prompt}
       
-      Overall plot summary: ${input.tableOfContents.plotSummary}
+      The chapter MUST strictly adhere to the overall plot summary and the specific chapter description provided. Do not introduce new plot points or characters that contradict the outline.
+
+      Overall plot summary for context:
+      ${input.tableOfContents.plotSummary}
       
       You are now writing Chapter ${input.chapterIndex + 1}: "${chapterToWrite.title}".
-      Chapter Description: ${chapterToWrite.description}
+      Key events for this chapter: ${chapterToWrite.description}
 
       ${previousChapterContext}
 
