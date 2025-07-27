@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow to generate a professional LinkedIn headshot from an image.
@@ -46,7 +47,7 @@ const generateLinkedInHeadshotFlow = ai.defineFlow(
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
       prompt: [
         {media: {url: input.photoDataUri}},
-        {text: `Generate a professional corporate headshot suitable for a LinkedIn profile from this image. The final image should look like a real photograph, not an illustration or a painting. The subject should be wearing professional business attire. The background should be a simple, neutral, out-of-focus office or studio setting. The lighting should be soft and flattering, like a professional photoshoot. Ensure the final image is a high-quality, realistic photograph.${userPrompt}`},
+        {text: `Generate a professional corporate headshot using the face from this image. It is critical that you DO NOT change the person's facial features. The final image should look like a real photograph, not an illustration. The subject should be wearing professional business attire. The background should be a simple, neutral, out-of-focus office or studio setting. The lighting should be soft and flattering, like a professional photoshoot. Ensure the final image is a high-quality, realistic photograph.${userPrompt}`},
       ],
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
