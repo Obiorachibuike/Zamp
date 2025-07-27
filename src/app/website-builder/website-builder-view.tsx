@@ -34,17 +34,20 @@ export function WebsiteBuilderView() {
     if (!prompt.trim()) return;
 
     setIsLoading(true);
-    let accumulatedCode = '';
-    // If it's a new generation, clear the code. Otherwise, we build on existing.
+    let accumulatedCode = htmlCode; // Start with existing code if it exists
     if (!htmlCode) {
-        setHtmlCode('');
+      setHtmlCode(''); // Clear if it's the first run
     }
 
     try {
-      // The generateWebsite flow is a generator function
       const stream = generateWebsite({ prompt, existingHtml: htmlCode });
 
+      let firstChunk = true;
       for await (const chunk of stream) {
+        if (firstChunk) {
+            accumulatedCode = ''; // Clear previous code on first chunk of new response
+            firstChunk = false;
+        }
         accumulatedCode += chunk;
         setHtmlCode(accumulatedCode);
       }
