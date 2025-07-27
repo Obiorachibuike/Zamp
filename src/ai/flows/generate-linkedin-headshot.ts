@@ -51,17 +51,18 @@ const generateLinkedInHeadshotFlow = ai.defineFlow(
       prompt: [
         { media: { url: input.photoDataUri } },
         {
-          text: `First, carefully analyze the provided image and detect every individual human face present. 
+          text: `Your task is to act as a professional photographer creating corporate headshots.
           
-For each face you detect, generate a separate, new professional corporate headshot. It is critical that you DO NOT change the person's facial features. The final image should look like a real photograph, not an illustration. 
-          
-For each generated headshot:
-- The subject should be wearing professional business attire.
-- The background should be a simple, neutral, out-of-focus office or studio setting.
-- The lighting should be soft and flattering, as in a professional photoshoot.
-- Ensure the final image is a high-quality, realistic photograph.
-${input.prompt ? `\nUser's additional instructions: ${input.prompt}` : ''}
-Your final output should be a collection of these generated headshot images, one for each person detected in the original photo.`,
+1.  **Analyze the Image:** First, carefully analyze the provided image and detect every individual human face present.
+2.  **Generate Headshots:** For each unique face you detect, generate a separate, new professional corporate headshot. It is critical that you DO NOT change the person's facial features. The final image should look like a real photograph, not an illustration.
+3.  **Style Guide for Each Headshot:**
+    *   **Attire:** The subject should be wearing professional business attire (e.g., a suit, blazer, or professional blouse).
+    *   **Background:** The background must be a simple, neutral, out-of-focus office or studio setting.
+    *   **Lighting:** The lighting should be soft and flattering, typical of a professional photoshoot.
+    *   **Quality:** Ensure the final image is a high-quality, realistic photograph.
+${input.prompt ? `\n4. **User's Additional Instructions:** ${input.prompt}` : ''}
+
+Your final output must be a collection of these generated headshot images, one for each person detected in the original photo.`,
         },
       ],
       config: {
