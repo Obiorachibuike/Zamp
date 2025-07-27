@@ -63,7 +63,7 @@ export function DocumentAnalyzerView() {
     } catch (error: any) {
       console.error('Error analyzing document:', error);
       let description = 'Failed to analyze the document. Please try again.';
-      if (error.message.includes('media')) {
+      if (error.message && (error.message.includes('media') || error.message.includes('mimeType'))) {
         description = 'The file type may not be supported for analysis. Please try a different file (e.g., PDF, JPG, PNG).';
       }
       toast({
@@ -83,6 +83,12 @@ export function DocumentAnalyzerView() {
       description: 'The analysis has been copied to your clipboard.',
     });
   };
+
+  const isPreviewable = (file: File | null) => {
+      if (!file) return false;
+      const type = file.type;
+      return type.startsWith('image/') || type === 'application/pdf';
+  }
 
   return (
     <div className="space-y-8">
@@ -142,37 +148,31 @@ export function DocumentAnalyzerView() {
                     <p>Upload a file to see a preview</p>
                   </div>
                 )}
-                {previewUrl && documentFile?.type.startsWith('image/') && (
-                  <img
-                    src={previewUrl}
-                    alt="Document preview"
-                    className="max-h-full max-w-full object-contain"
-                  />
+                {previewUrl && documentFile && isPreviewable(documentFile) && (
+                  documentFile.type.startsWith('image/') ? (
+                    <img
+                        src={previewUrl}
+                        alt="Document preview"
+                        className="max-h-full max-w-full object-contain"
+                    />
+                  ) : (
+                    <iframe
+                        src={previewUrl}
+                        className="h-full w-full"
+                        title="PDF Preview"
+                    />
+                  )
                 )}
-                {previewUrl && documentFile?.type === 'application/pdf' && (
-                  <iframe
-                    src={previewUrl}
-                    className="h-full w-full"
-                    title="PDF Preview"
-                  />
-                )}
-                {previewUrl &&
-                  !documentFile?.type.startsWith('image/') &&
-                  documentFile?.type !== 'application/pdf' && (
+                {previewUrl && documentFile && !isPreviewable(documentFile) && (
                     <div className="text-center text-muted-foreground p-4">
                       <File className="mx-auto h-12 w-12" />
                       <p className="mt-2 font-semibold">{documentFile?.name}</p>
                       <p className="text-sm">
-                        No preview available for this file type.
+                        No preview is available, but the AI will still try to analyze it.
                       </p>
-                      <Button asChild variant="link" size="sm">
-                        <a
-                          href={previewUrl}
-                          download={documentFile?.name}
-                        >
-                          Download file
-                        </a>
-                      </Button>
+                       <p className="text-xs text-amber-600 mt-2">
+                        Note: The AI supports PDF, image, and text formats. Other types may not work.
+                      </p>
                     </div>
                   )}
               </div>
