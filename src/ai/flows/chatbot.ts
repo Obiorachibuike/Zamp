@@ -55,21 +55,21 @@ const chatFlow = ai.defineFlow(
   },
   async ({messages}) => {
     const llmResponse = await ai.generate({
-      model: googleAI.model('gemini-2.0-flash'),
+      model: googleAI.model('gemini-1.5-flash'),
       prompt: chatPrompt,
       history: messages,
       tools: [googleAI.googleSearch],
     });
 
-    const response = llmResponse.output();
-    if (!response) {
+    const content = llmResponse.text();
+    if (!content) {
       throw new Error('No response from AI');
     }
 
     return {
       message: {
         role: 'model',
-        content: response,
+        content: content,
       },
     };
   }
