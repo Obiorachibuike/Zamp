@@ -35,6 +35,7 @@ import {
   BookOpen,
   Brain,
   MessageSquareQuote,
+  Palette,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -74,6 +75,12 @@ const tools = [
     description: 'Generate unique avatars from text prompts.',
     href: '/avatar-generator',
     icon: <Smile className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Image to Cartoon',
+    description: 'Transform a photo into a cartoon-style image.',
+    href: '/image-to-cartoon',
+    icon: <Palette className="h-8 w-8 text-primary" />,
   },
   {
     title: 'Image Captioning',
@@ -209,7 +216,7 @@ export default function DashboardPage() {
         </p>
       </header>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {tools.map((tool) => (
+        {tools.sort((a,b) => a.title.localeCompare(b.title)).map((tool) => (
           <Link href={tool.href} key={tool.href} className="group">
             <Card className="flex h-full flex-col justify-between transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
               <CardHeader>

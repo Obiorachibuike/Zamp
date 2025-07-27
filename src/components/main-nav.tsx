@@ -30,6 +30,7 @@ import {
   BookOpen,
   Brain,
   MessageSquareQuote,
+  Palette,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -48,6 +49,7 @@ const menuItems = [
   { href: '/image-generator', label: 'Image Generator', icon: <Image /> },
   { href: '/talking-photo', label: 'Talking Photo', icon: <MessageSquareQuote /> },
   { href: '/avatar-generator', label: 'Avatar Generator', icon: <Smile /> },
+  { href: '/image-to-cartoon', label: 'Image to Cartoon', icon: <Palette /> },
   { href: '/image-captioning', label: 'Image Captioning', icon: <Type /> },
   { href: '/grammar-checker', label: 'Grammar Checker', icon: <FileCheck /> },
   { href: '/code-generator', label: 'Code Generator', icon: <Code2 /> },
@@ -138,10 +140,19 @@ const menuItems = [
 export function MainNav() {
   const pathname = usePathname();
 
+  const sortedMenuItems = [...menuItems.slice(1)].sort((a,b) => a.label.localeCompare(b.label));
+  sortedMenuItems.unshift(menuItems[0]); // Keep Dashboard at the top
+  const settingsIndex = sortedMenuItems.findIndex(item => item.href === '/settings');
+  if (settingsIndex > -1) {
+    const [settingsItem] = sortedMenuItems.splice(settingsIndex, 1);
+    sortedMenuItems.push(settingsItem);
+  }
+
+
   return (
     <SidebarContent>
       <SidebarMenu>
-        {menuItems.map((item) => (
+        {sortedMenuItems.map((item) => (
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
               asChild
