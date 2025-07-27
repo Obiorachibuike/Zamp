@@ -37,8 +37,13 @@ export function WebsiteBuilderView() {
     setHtmlCode('');
 
     try {
-      const result = await generateWebsite({ prompt });
-      setHtmlCode(result.html);
+      // The generateWebsite function is now a generator
+      const stream = await generateWebsite({ prompt });
+      let accumulatedCode = '';
+      for await (const chunk of stream) {
+        accumulatedCode += chunk;
+        setHtmlCode(accumulatedCode);
+      }
     } catch (error) {
       console.error('Error generating website:', error);
       toast({
@@ -131,11 +136,11 @@ export function WebsiteBuilderView() {
                 </CardHeader>
                 <CardContent>
                   <div className="h-[70vh] w-full rounded-lg border bg-muted">
-                    {isLoading ? (
+                    {isLoading && !htmlCode ? (
                       <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
                         <Loader2 className="h-8 w-8 animate-spin" />
                         <p>Building your website...</p>
-                      </div>
+                      </div>>
                     ) : htmlCode ? (
                       <iframe
                         srcDoc={htmlCode}
@@ -164,7 +169,7 @@ export function WebsiteBuilderView() {
                   <div className="relative h-[70vh] w-full">
                     <pre className="h-full overflow-auto rounded-lg border bg-muted p-4">
                       <code className="text-sm font-code">
-                        {isLoading
+                        {isLoading && !htmlCode
                           ? 'Generating code...'
                           : htmlCode ||
                             'HTML code will appear here.'}

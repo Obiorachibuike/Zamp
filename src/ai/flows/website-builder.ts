@@ -16,19 +16,15 @@ const GenerateWebsiteInputSchema = z.object({
 });
 export type GenerateWebsiteInput = z.infer<typeof GenerateWebsiteInputSchema>;
 
-const GenerateWebsiteOutputSchema = z.object({
-  html: z.string().describe('The generated HTML code for the website, including Tailwind CSS classes.'),
-});
-export type GenerateWebsiteOutput = z.infer<typeof GenerateWebsiteOutputSchema>;
-
-export async function generateWebsite(input: GenerateWebsiteInput): Promise<GenerateWebsiteOutput> {
-  return generateWebsiteFlow(input);
+export async function* generateWebsite(input: GenerateWebsiteInput) {
+  for await (const chunk of generateWebsiteFlow(input)) {
+    yield chunk;
+  }
 }
 
 const prompt = ai.definePrompt({
   name: 'generateWebsitePrompt',
   input: {schema: GenerateWebsiteInputSchema},
-  output: {schema: GenerateWebsiteOutputSchema},
   prompt: `You are an expert web developer specializing in creating beautiful, modern, and responsive single-page websites using HTML and Tailwind CSS.
 
 Your task is to take a user's prompt and intelligently design and generate the complete HTML for a single-page website. You should think about what a real user would want and create a full, professional-looking site.
@@ -54,10 +50,15 @@ const generateWebsiteFlow = ai.defineFlow(
   {
     name: 'generateWebsiteFlow',
     inputSchema: GenerateWebsiteInputSchema,
-    outputSchema: GenerateWebsiteOutputSchema,
+    stream: { schema: z.string() },
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async function* (input) {
+    const {stream} = await ai.generate({
+      prompt: prompt.compile({input: input}),
+      stream: true,
+    });
+    for await (const chunk of stream) {
+      yield chunk.text();
+    }
   }
 );
