@@ -35,6 +35,7 @@ import {
   Music,
   Sparkles,
   FileText,
+  Briefcase,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -150,6 +151,11 @@ const menuItems = [
     icon: <FileText />,
   },
   { href: '/chatbot', label: 'AI Chatbot', icon: <MessageCircle />},
+  {
+    href: '/linkedin-headshot-generator',
+    label: 'LinkedIn Headshot Generator',
+    icon: <Briefcase />,
+  },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
 

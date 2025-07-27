@@ -40,6 +40,7 @@ import {
   Music,
   Sparkles,
   FileText,
+  Briefcase,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -229,6 +230,12 @@ const tools = [
     description: 'Have a conversation with an AI assistant.',
     href: '/chatbot',
     icon: <MessageCircle className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'LinkedIn Headshot Generator',
+    description: 'Create a professional headshot for your profile.',
+    href: '/linkedin-headshot-generator',
+    icon: <Briefcase className="h-8 w-8 text-primary" />,
   },
 ];
 
