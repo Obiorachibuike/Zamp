@@ -34,12 +34,16 @@ export function WebsiteBuilderView() {
     if (!prompt.trim()) return;
 
     setIsLoading(true);
-    setHtmlCode('');
+    let accumulatedCode = '';
+    // If it's a new generation, clear the code. Otherwise, we build on existing.
+    if (!htmlCode) {
+        setHtmlCode('');
+    }
 
     try {
-      // The generateWebsite function is now a generator
-      const stream = await generateWebsite({ prompt });
-      let accumulatedCode = '';
+      // The generateWebsite flow is a generator function
+      const stream = generateWebsite({ prompt, existingHtml: htmlCode });
+
       for await (const chunk of stream) {
         accumulatedCode += chunk;
         setHtmlCode(accumulatedCode);
@@ -53,10 +57,12 @@ export function WebsiteBuilderView() {
       });
     } finally {
       setIsLoading(false);
+      setPrompt(''); // Clear prompt after submission
     }
   };
 
   const handleCopy = () => {
+    if (!htmlCode) return;
     navigator.clipboard.writeText(htmlCode);
     toast({
       title: 'Copied!',
@@ -71,7 +77,7 @@ export function WebsiteBuilderView() {
           AI Website Builder
         </h1>
         <p className="text-muted-foreground">
-          Generate a responsive, single-page website from a text description.
+          Generate or edit a responsive, single-page website from a text description.
         </p>
       </header>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -79,11 +85,13 @@ export function WebsiteBuilderView() {
           <Card className="sticky top-20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <PenSquare className="h-6 w-6" /> Your Website Brief
+                <PenSquare className="h-6 w-6" /> Your Request
               </CardTitle>
               <CardDescription>
-                Describe the single-page website you want to build. Be as
-                detailed as possible.
+                {htmlCode 
+                    ? "Describe the changes or new features you want to add."
+                    : "Describe the single-page website you want to build. Be as detailed as possible."
+                }
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -91,7 +99,11 @@ export function WebsiteBuilderView() {
                 <Textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="e.g., A landing page for a modern coffee shop in downtown Toronto called 'Urban Grind'. It should have a hero section with a call-to-action, a features section highlighting our specialty coffees, an about us section, and a simple contact form."
+                  placeholder={
+                    htmlCode
+                      ? "e.g., Change the color theme to dark mode with blue accents."
+                      : "e.g., A landing page for a modern coffee shop called 'Urban Grind'..."
+                  }
                   className="h-64 resize-none"
                   disabled={isLoading}
                 />
@@ -103,7 +115,7 @@ export function WebsiteBuilderView() {
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Generate Website
+                  {htmlCode ? 'Update Website' : 'Generate Website'}
                 </Button>
               </form>
             </CardContent>
