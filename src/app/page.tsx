@@ -73,6 +73,12 @@ const tools = [
     href: '/avatar-generator',
     icon: <Smile className="h-8 w-8 text-primary" />,
   },
+    {
+    title: 'AI Chatbot',
+    description: 'Have a conversation with a knowledgeable AI.',
+    href: '/chatbot',
+    icon: <MessageCircle className="h-8 w-8 text-primary" />,
+  },
   {
     title: 'Image to Cartoon',
     description: 'Transform a photo into a cartoon-style image.',

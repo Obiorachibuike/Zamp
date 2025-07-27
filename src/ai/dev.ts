@@ -30,3 +30,4 @@ import '@/ai/flows/image-to-cartoon.ts';
 import '@/ai/flows/image-to-animation.ts';
 import '@/ai/flows/lyrics-generator.ts';
 import '@/ai/flows/enhance-image.ts';
+import '@/ai/flows/chatbot.ts';
