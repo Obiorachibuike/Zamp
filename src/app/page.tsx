@@ -39,6 +39,7 @@ import {
   Film,
   Music,
   Sparkles,
+  FileText,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -216,6 +217,12 @@ const tools = [
     description: 'Generate structured non-fiction content.',
     href: '/non-fiction-writer',
     icon: <Brain className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Document Analyzer',
+    description: 'Explain the content of any uploaded document.',
+    href: '/document-analyzer',
+    icon: <FileText className="h-8 w-8 text-primary" />,
   },
 ];
 

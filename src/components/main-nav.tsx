@@ -34,6 +34,7 @@ import {
   Film,
   Music,
   Sparkles,
+  FileText,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -142,6 +143,11 @@ const menuItems = [
     href: '/non-fiction-writer',
     label: 'Non-Fiction Writer',
     icon: <Brain />,
+  },
+  {
+    href: '/document-analyzer',
+    label: 'Document Analyzer',
+    icon: <FileText />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
