@@ -37,6 +37,7 @@ import {
   FileText,
   Briefcase,
   PenLine,
+  LayoutTemplate,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -156,6 +157,11 @@ const menuItems = [
     href: '/prompt-generator',
     label: 'Prompt Generator',
     icon: <PenLine />,
+  },
+  {
+    href: '/website-builder',
+    label: 'Website Builder',
+    icon: <LayoutTemplate />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];

@@ -42,6 +42,7 @@ import {
   FileText,
   Briefcase,
   PenLine,
+  LayoutTemplate,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -237,6 +238,12 @@ const tools = [
     description: 'Expand a simple idea into a detailed AI prompt.',
     href: '/prompt-generator',
     icon: <PenLine className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'AI Website Builder',
+    description: 'Generate a single-page website from a description.',
+    href: '/website-builder',
+    icon: <LayoutTemplate className="h-8 w-8 text-primary" />,
   },
 ];
 

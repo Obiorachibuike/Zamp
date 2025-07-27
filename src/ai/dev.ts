@@ -33,3 +33,4 @@ import '@/ai/flows/enhance-image.ts';
 import '@/ai/flows/document-analyzer.ts';
 import '@/ai/flows/chatbot.ts';
 import '@/ai/flows/prompt-generator.ts';
+import '@/ai/flows/website-builder.ts';
