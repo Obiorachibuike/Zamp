@@ -34,3 +34,4 @@ import '@/ai/flows/document-analyzer.ts';
 import '@/ai/flows/chatbot.ts';
 import '@/ai/flows/generate-linkedin-headshot.ts';
 import '@/ai/flows/prompt-generator.ts';
+import '@/ai/flows/detect-faces.ts';

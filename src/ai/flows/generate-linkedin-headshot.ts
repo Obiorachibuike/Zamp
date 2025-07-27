@@ -17,7 +17,7 @@ const GenerateLinkedInHeadshotInputSchema = z.object({
     .describe(
       "A photo to use as a base, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  prompt: z.string().optional().describe('An optional text description to guide the headshot generation.'),
+  instructions: z.string().optional().describe('Instructions on which person to use, e.g., "the person on the left".'),
 });
 export type GenerateLinkedInHeadshotInput = z.infer<typeof GenerateLinkedInHeadshotInputSchema>;
 
@@ -41,7 +41,7 @@ const generateLinkedInHeadshotFlow = ai.defineFlow(
     outputSchema: GenerateLinkedInHeadshotOutputSchema,
   },
   async input => {
-    const userPrompt = input.prompt ? ` Additional user instructions: ${input.prompt}` : '';
+    const userPrompt = input.instructions ? ` Target the following person for the headshot: ${input.instructions}.` : '';
 
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
