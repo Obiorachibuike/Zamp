@@ -17,7 +17,6 @@ const GenerateLinkedInHeadshotInputSchema = z.object({
     .describe(
       "A photo to use as a base, as a data URI that must include a MIME type and use Base64 encoding."
     ),
-  prompt: z.string().optional().describe('Optional text description for additional customization.'),
 });
 export type GenerateLinkedInHeadshotInput = z.infer<typeof GenerateLinkedInHeadshotInputSchema>;
 
@@ -46,18 +45,7 @@ const generateLinkedInHeadshotFlow = ai.defineFlow(
       prompt: [
         { media: { url: input.photoDataUri } },
         {
-          text: `Your task is to act as a professional photographer creating a corporate headshot.
-          
-1.  **Analyze the Image:** First, carefully analyze the provided image to identify the main subject.
-2.  **Generate Headshot:** Generate a single, new professional corporate headshot of the main subject. It is critical that you DO NOT change the person's facial features. The final image should look like a real photograph, not an illustration.
-3.  **Style Guide for the Headshot:**
-    *   **Attire:** The subject should be wearing professional business attire (e.g., a suit, blazer, or professional blouse).
-    *   **Background:** The background must be a simple, neutral, out-of-focus office or studio setting.
-    *   **Lighting:** The lighting should be soft and flattering, typical of a professional photoshoot.
-    *   **Quality:** Ensure the final image is a high-quality, realistic photograph.
-${input.prompt ? `\n4. **User's Additional Instructions:** ${input.prompt}` : ''}
-
-Your final output must be a single generated headshot image.`,
+          text: `Transform this photo into a professional LinkedIn headshot. Retain the subject's facial features and identity, but enhance overall clarity and lighting. Use a soft, neutral background such as light gray, white, or corporate blue. The subject should be centered, looking directly at the camera, with a confident and approachable expression. Adjust clothing to look business casual or formal — such as a blazer, dress shirt, or blouse. Ensure even skin tone, natural retouching, and a clean, high-resolution finish suitable for a corporate profile.`,
         },
       ],
       config: {
@@ -65,7 +53,7 @@ Your final output must be a single generated headshot image.`,
       },
     });
 
-    const imageUrl = media.url;
+    const imageUrl = media?.url;
     if (!imageUrl) {
       throw new Error('Could not generate an image.');
     }
