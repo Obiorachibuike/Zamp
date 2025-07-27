@@ -224,6 +224,12 @@ const tools = [
     href: '/document-analyzer',
     icon: <FileText className="h-8 w-8 text-primary" />,
   },
+   {
+    title: 'AI Chatbot',
+    description: 'Have a conversation with an AI assistant.',
+    href: '/chatbot',
+    icon: <MessageCircle className="h-8 w-8 text-primary" />,
+  },
 ];
 
 export default function DashboardPage() {

@@ -149,6 +149,7 @@ const menuItems = [
     label: 'Document Analyzer',
     icon: <FileText />,
   },
+  { href: '/chatbot', label: 'AI Chatbot', icon: <MessageCircle />},
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];
 
