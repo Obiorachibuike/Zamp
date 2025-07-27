@@ -11,7 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {researchTopic} from './researcher';
+import {googleSearch} from '@genkit-ai/googleai';
 
 const ChatInputSchema = z.object({
   query: z.string().describe('The user query for the chatbot.'),
@@ -27,39 +27,26 @@ export async function chat(input: ChatInput): Promise<ChatOutput> {
   return chatFlow(input);
 }
 
-const researchTool = ai.defineTool(
-    {
-        name: 'researcher',
-        description: 'Use this tool to research a topic and get a summary and relevant links. This is useful for answering questions about topics you do not know about.',
-        inputSchema: z.object({topic: z.string()}),
-        outputSchema: z.any(),
-    },
-    async (input) => researchTopic(input)
-);
-
-
-const chatPrompt = ai.definePrompt({
-  name: 'chatPrompt',
-  input: {schema: ChatInputSchema},
-  output: {schema: ChatOutputSchema},
-  tools: [researchTool],
-  prompt: `You are a helpful chatbot. Your goal is to provide accurate and helpful answers to the user's questions.
-  
-If you do not know the answer to a question, you must use the provided research tool to find the information. Do not make up answers.
-
-Respond to the following query:
-
-{{{query}}}`,
-});
-
 const chatFlow = ai.defineFlow(
   {
     name: 'chatFlow',
     inputSchema: ChatInputSchema,
     outputSchema: ChatOutputSchema,
+    tools: [googleSearch],
   },
   async input => {
-    const {output} = await chatPrompt(input);
-    return output!;
+    const llmResponse = await ai.generate({
+      prompt: `You are a helpful chatbot. Your goal is to provide accurate and helpful answers to the user's questions. 
+      
+If you do not know the answer to a question, you must use the provided tools to find the information. Do not make up answers.
+
+Respond to the following query:
+
+${input.query}`,
+    });
+    
+    return {
+        response: llmResponse.text,
+    };
   }
 );
