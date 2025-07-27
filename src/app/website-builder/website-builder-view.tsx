@@ -34,19 +34,23 @@ export function WebsiteBuilderView() {
     if (!prompt.trim()) return;
 
     setIsLoading(true);
-    let accumulatedCode = htmlCode; // Start with existing code if it exists
+    let accumulatedCode = htmlCode;
+    // On the first request, we want to clear the slate.
+    // For subsequent requests, we build upon the existing code.
     if (!htmlCode) {
-      setHtmlCode(''); // Clear if it's the first run
+      setHtmlCode('');
     }
 
     try {
+      // The generateWebsite function is an async generator
       const stream = generateWebsite({ prompt, existingHtml: htmlCode });
 
       let firstChunk = true;
       for await (const chunk of stream) {
         if (firstChunk) {
-            accumulatedCode = ''; // Clear previous code on first chunk of new response
-            firstChunk = false;
+          // The AI will regenerate the whole page, so we clear the old code on the first chunk.
+          accumulatedCode = '';
+          firstChunk = false;
         }
         accumulatedCode += chunk;
         setHtmlCode(accumulatedCode);
@@ -60,7 +64,7 @@ export function WebsiteBuilderView() {
       });
     } finally {
       setIsLoading(false);
-      setPrompt(''); // Clear prompt after submission
+      setPrompt(''); // Clear prompt after submission is complete
     }
   };
 
