@@ -13,12 +13,12 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import {
   Download,
   Image as ImageIcon,
   Loader2,
-  Briefcase,
   GalleryVertical,
 } from 'lucide-react';
 import NextImage from 'next/image';
@@ -27,6 +27,7 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 export function LinkedInHeadshotGeneratorView() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState('');
   const [generatedHeadshots, setGeneratedHeadshots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -53,6 +54,7 @@ export function LinkedInHeadshotGeneratorView() {
     try {
       const result = await generateLinkedInHeadshot({
         photoDataUri: originalImageUrl,
+        prompt,
       });
 
       if (result.faceCount === 0) {
@@ -137,6 +139,17 @@ export function LinkedInHeadshotGeneratorView() {
                       />
                     )}
                   </div>
+                   <div className="space-y-2">
+                    <Label htmlFor="prompt">Optional Instructions</Label>
+                    <Textarea
+                      id="prompt"
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="e.g., Use a light blue background, make the smile wider..."
+                      className="h-20 resize-none"
+                      disabled={isLoading}
+                    />
+                  </div>
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" className="w-full" disabled={isLoading || !originalImageUrl}>
@@ -164,7 +177,7 @@ export function LinkedInHeadshotGeneratorView() {
                     <div className="flex justify-center items-center h-96">
                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
                             <Loader2 className="h-12 w-12 animate-spin" />
-                            <p>Creating headshots...</p>
+                            <p>Creating headshots... (this can take a moment)</p>
                         </div>
                     </div>
                 )}

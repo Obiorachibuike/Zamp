@@ -17,6 +17,7 @@ const GenerateLinkedInHeadshotInputSchema = z.object({
     .describe(
       "A photo to use as a base, as a data URI that must include a MIME type and use Base64 encoding."
     ),
+  prompt: z.string().optional().describe('Optional text description for additional customization.'),
 });
 export type GenerateLinkedInHeadshotInput = z.infer<typeof GenerateLinkedInHeadshotInputSchema>;
 
@@ -59,14 +60,13 @@ For each generated headshot:
 - The background should be a simple, neutral, out-of-focus office or studio setting.
 - The lighting should be soft and flattering, as in a professional photoshoot.
 - Ensure the final image is a high-quality, realistic photograph.
-
+${input.prompt ? `\nUser's additional instructions: ${input.prompt}` : ''}
 Your final output should be a collection of these generated headshot images, one for each person detected in the original photo.`,
         },
       ],
       config: {
-        // We expect multiple images back, one for each detected face.
+        // The model will return multiple images if it detects multiple faces.
         responseModalities: ['TEXT', 'IMAGE'],
-        numImages: 10, // Request a high number to accommodate multiple faces. The model will only return as many as it generates.
       },
     });
 
