@@ -11,7 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {googleSearch} from '@genkit-ai/googleai';
+import {googleAI, googleSearch} from '@genkit-ai/googleai';
 
 const ChatInputSchema = z.object({
   query: z.string().describe('The user query for the chatbot.'),
@@ -32,7 +32,6 @@ const chatFlow = ai.defineFlow(
     name: 'chatFlow',
     inputSchema: ChatInputSchema,
     outputSchema: ChatOutputSchema,
-    tools: [googleSearch],
   },
   async input => {
     const llmResponse = await ai.generate({
@@ -43,6 +42,8 @@ If you do not know the answer to a question, you must use the provided tools to 
 Respond to the following query:
 
 ${input.query}`,
+      tools: [googleSearch],
+      model: googleAI.model('gemini-2.0-flash'),
     });
     
     return {
