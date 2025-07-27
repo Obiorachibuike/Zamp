@@ -14,7 +14,7 @@ const AnalyzeDocumentInputSchema = z.object({
   documentDataUri: z
     .string()
     .describe(
-      "A document to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'. Supported types include images, PDFs, and text-based files."
+      "A document to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'. Supported types include PDF, common image formats (PNG, JPG), and text."
     ),
 });
 export type AnalyzeDocumentInput = z.infer<typeof AnalyzeDocumentInputSchema>;

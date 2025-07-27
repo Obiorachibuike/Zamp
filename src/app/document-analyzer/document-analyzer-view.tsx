@@ -108,8 +108,7 @@ export function DocumentAnalyzerView() {
                 <Upload className="h-6 w-6" /> Upload Document
               </CardTitle>
               <CardDescription>
-                Select a file from your device to analyze. Supports PDF, images,
-                and more.
+                Supported formats: PDF, PNG, JPG, and other common image types.
               </CardDescription>
             </CardHeader>
             <CardContent>
