@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A conversational chatbot that can use tools.
@@ -7,21 +8,19 @@ import {ai} from '@/ai/genkit';
 import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
-export const ChatMessageSchema = z.object({
-  role: z.enum(['user', 'model']),
-  content: z.string(),
-});
-export type ChatMessage = z.infer<typeof ChatMessageSchema>;
+// Define schema types for export, but not the schemas themselves.
+export type ChatMessage = {
+  role: 'user' | 'model';
+  content: string;
+};
 
-export const ChatInputSchema = z.object({
-  messages: z.array(ChatMessageSchema),
-});
-export type ChatInput = z.infer<typeof ChatInputSchema>;
+export type ChatInput = {
+  messages: ChatMessage[];
+};
 
-export const ChatOutputSchema = z.object({
-  message: ChatMessageSchema,
-});
-export type ChatOutput = z.infer<typeof ChatOutputSchema>;
+export type ChatOutput = {
+  message: ChatMessage;
+};
 
 const chatPrompt = `You are a friendly and helpful AI assistant.
 
@@ -31,15 +30,28 @@ If you do not know the answer to a question, you must use the provided tools to 
 
 Always be polite and professional in your responses.`;
 
+// The main function that the client will call.
 export async function chat(input: ChatInput): Promise<ChatOutput> {
   return chatFlow(input);
 }
 
+// Define the Genkit flow.
 const chatFlow = ai.defineFlow(
   {
     name: 'chatFlow',
-    inputSchema: ChatInputSchema,
-    outputSchema: ChatOutputSchema,
+    // Define schemas inline, don't export them.
+    inputSchema: z.object({
+        messages: z.array(z.object({
+            role: z.enum(['user', 'model']),
+            content: z.string(),
+        }))
+    }),
+    outputSchema: z.object({
+        message: z.object({
+            role: z.enum(['user', 'model']),
+            content: z.string(),
+        })
+    }),
   },
   async ({messages}) => {
     const llmResponse = await ai.generate({
