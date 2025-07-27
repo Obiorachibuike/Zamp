@@ -1,7 +1,6 @@
 
 'use client';
 
-import { detectFaces } from '@/ai/flows/detect-faces';
 import { generateLinkedInHeadshot } from '@/ai/flows/generate-linkedin-headshot';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,25 +19,16 @@ import {
   Image as ImageIcon,
   Loader2,
   Briefcase,
-  Users,
-  ArrowRight,
+  GalleryVertical,
 } from 'lucide-react';
 import NextImage from 'next/image';
-import { useState, type ChangeEvent } from 'react';
-
-type Stage = 'UPLOAD' | 'DETECTING' | 'SELECT_FACE' | 'GENERATING' | 'RESULT';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 
 export function LinkedInHeadshotGeneratorView() {
-  const [stage, setStage] = useState<Stage>('UPLOAD');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
-  const [detectionResult, setDetectionResult] = useState<{
-    faceCount: number;
-    annotatedImage: string;
-  } | null>(null);
-  const [generationInstruction, setGenerationInstruction] = useState('');
-  const [finalHeadshot, setFinalHeadshot] = useState<string | null>(null);
-
+  const [generatedHeadshots, setGeneratedHeadshots] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -48,80 +38,59 @@ export function LinkedInHeadshotGeneratorView() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setOriginalImageUrl(reader.result as string);
-        setStage('UPLOAD');
-        // Reset subsequent stages
-        setDetectionResult(null);
-        setFinalHeadshot(null);
-        setGenerationInstruction('');
+        setGeneratedHeadshots([]);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleDetectFaces = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     if (!originalImageUrl) return;
-    setStage('DETECTING');
-    try {
-      const result = await detectFaces({ photoDataUri: originalImageUrl });
-      setDetectionResult(result);
-      setStage('SELECT_FACE');
-      if (result.faceCount === 1) {
-        setGenerationInstruction('the only person in the image');
-      }
-    } catch (error: any) {
-      console.error('Error detecting faces:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Face Detection Failed',
-        description:
-          error.message ||
-          'Could not process the image. Please try another one.',
-      });
-      setStage('UPLOAD');
-    }
-  };
 
-  const handleGenerateHeadshot = async () => {
-    if (!originalImageUrl) return;
-    setStage('GENERATING');
+    setIsLoading(true);
+    setGeneratedHeadshots([]);
     try {
       const result = await generateLinkedInHeadshot({
         photoDataUri: originalImageUrl,
-        instructions: generationInstruction,
       });
-      setFinalHeadshot(result.image);
-      setStage('RESULT');
+
+      if (result.faceCount === 0) {
+        toast({
+          variant: 'destructive',
+          title: 'No Faces Detected',
+          description: 'The AI could not detect any faces in the uploaded image. Please try a different photo.',
+        });
+      } else {
+        toast({
+          title: 'Success!',
+          description: `Generated ${result.faceCount} professional headshot(s).`,
+        });
+      }
+      setGeneratedHeadshots(result.images);
+
     } catch (error: any) {
       console.error('Error generating headshot:', error);
-      let description = 'Failed to generate headshot. Please try again.';
+      let description = 'Failed to generate headshots. Please try again.';
       if (error.message && error.message.includes('500')) {
-        description =
-          'The image processing service is currently unavailable. Please try again in a few moments.';
+        description = 'The image processing service is currently unavailable. Please try again in a few moments.';
+      } else if (error.message.includes('prompt was blocked')) {
+        description = 'The request was blocked for safety reasons. Please try a different image.'
       }
       toast({
         variant: 'destructive',
         title: 'Error',
         description,
       });
-      setStage('SELECT_FACE'); // Go back to selection stage on error
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const handleStartOver = () => {
-    setStage('UPLOAD');
-    setImageFile(null);
-    setOriginalImageUrl(null);
-    setDetectionResult(null);
-    setFinalHeadshot(null);
-    setGenerationInstruction('');
-  };
-
-  const getUniqueFilename = () => {
+  
+  const getUniqueFilename = (index: number) => {
     const timestamp = new Date().getTime();
-    return `headshot-${timestamp}.png`;
+    return `headshot-${timestamp}-${index + 1}.png`;
   };
-
-  const isLoading = stage === 'DETECTING' || stage === 'GENERATING';
 
   return (
     <div className="space-y-8">
@@ -130,169 +99,110 @@ export function LinkedInHeadshotGeneratorView() {
           LinkedIn Headshot Generator
         </h1>
         <p className="text-muted-foreground">
-          Upload a photo to create a professional headshot for your profile in a
-          few steps.
+          Upload a photo to create professional headshots for each person detected.
         </p>
       </header>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left Column: Input and instructions */}
-        <div className="space-y-4">
-          <Card>
+        <div className="lg:col-span-1">
+          <Card className="sticky top-8">
             <CardHeader>
-              <CardTitle>Step 1: Upload Your Photo</CardTitle>
+              <CardTitle>Upload Your Photo</CardTitle>
+              <CardDescription>Upload a photo with one or more people.</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label htmlFor="image-upload">Image File</Label>
-                <Input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  disabled={isLoading}
-                />
-              </div>
-            </CardContent>
-            {originalImageUrl && (
-              <CardFooter>
-                <Button onClick={handleDetectFaces} disabled={isLoading}>
-                  {stage === 'DETECTING' && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Detect Faces
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardFooter>
-            )}
-          </Card>
-
-          {detectionResult &&
-            (stage === 'SELECT_FACE' ||
-              stage === 'GENERATING' ||
-              stage === 'RESULT') && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Step 2: Identify the Subject</CardTitle>
-                  <CardDescription>
-                    {detectionResult.faceCount > 1
-                      ? 'Tell the AI which person to use for the headshot.'
-                      : 'We found one person in your photo. Ready to generate?'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {detectionResult.faceCount > 1 && (
-                    <div className="space-y-2">
-                      <Label htmlFor="instruction">Instructions</Label>
-                      <Input
-                        id="instruction"
-                        value={generationInstruction}
-                        onChange={(e) =>
-                          setGenerationInstruction(e.target.value)
-                        }
-                        placeholder="e.g., 'the person on the left', 'the one in the red shirt'"
-                        disabled={isLoading}
+             <form onSubmit={handleSubmit}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="image-upload">Image File</Label>
+                    <Input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div className="relative aspect-square w-full rounded-lg border bg-muted flex items-center justify-center">
+                    {!originalImageUrl ? (
+                      <div className="text-center text-muted-foreground">
+                        <ImageIcon className="mx-auto h-12 w-12" />
+                        <p>Image Preview</p>
+                      </div>
+                    ) : (
+                      <NextImage
+                        src={originalImageUrl}
+                        alt="Original"
+                        layout="fill"
+                        className="object-contain rounded-lg"
                       />
-                    </div>
-                  )}
-                  {detectionResult.faceCount === 1 && (
-                    <p className="text-sm text-muted-foreground">
-                      Instruction has been pre-filled.
-                    </p>
-                  )}
+                    )}
+                  </div>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    onClick={handleGenerateHeadshot}
-                    disabled={isLoading || !generationInstruction}
-                  >
-                    {stage === 'GENERATING' && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Generate Headshot
+                  <Button type="submit" className="w-full" disabled={isLoading || !originalImageUrl}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Generate Headshots
                   </Button>
                 </CardFooter>
-              </Card>
-            )}
+            </form>
+          </Card>
         </div>
 
         {/* Right Column: Image display */}
-        <div>
-          <Card className="sticky top-8">
-            <CardHeader>
-              <CardTitle>
-                {stage === 'UPLOAD' && 'Image Preview'}
-                {stage === 'DETECTING' && 'Detecting Faces...'}
-                {stage === 'SELECT_FACE' && 'Face Detection Result'}
-                {stage === 'GENERATING' && 'Generating Headshot...'}
-                {stage === 'RESULT' && 'Your Professional Headshot'}
+        <div className="lg:col-span-2">
+          <Card>
+             <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <GalleryVertical className="h-6 w-6 text-primary" /> Generated Headshots
               </CardTitle>
+              <CardDescription>
+                {isLoading ? "Generating..." : "Your professional headshots will appear below."}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="relative aspect-square w-full rounded-lg border bg-muted flex items-center justify-center">
-                {/* Initial State */}
-                {!originalImageUrl && (
-                  <div className="text-center text-muted-foreground">
-                    <ImageIcon className="mx-auto h-12 w-12" />
-                    <p>Upload an image to start</p>
-                  </div>
+                {isLoading && (
+                    <div className="flex justify-center items-center h-96">
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                            <Loader2 className="h-12 w-12 animate-spin" />
+                            <p>Creating headshots...</p>
+                        </div>
+                    </div>
                 )}
-
-                {/* Loading states */}
-                {(stage === 'DETECTING' || stage === 'GENERATING') && (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                    <p>
-                      {stage === 'DETECTING'
-                        ? 'Analyzing photo...'
-                        : 'Creating headshot...'}
-                    </p>
-                  </div>
+                {!isLoading && generatedHeadshots.length === 0 && (
+                    <div className="flex justify-center items-center h-96 text-muted-foreground text-center">
+                       <p>Upload an image and click "Generate" to see the results.</p>
+                    </div>
                 )}
-
-                {/* Display logic */}
-                {originalImageUrl && stage === 'UPLOAD' && (
-                  <NextImage
-                    src={originalImageUrl}
-                    alt="Original image"
-                    layout="fill"
-                    className="object-contain rounded-lg"
-                  />
+                {generatedHeadshots.length > 0 && (
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {generatedHeadshots.map((headshotUrl, index) => (
+                        <div key={index} className="relative group">
+                            <Card>
+                                <CardContent className="p-0">
+                                    <div className="aspect-square w-full rounded-t-lg bg-muted flex items-center justify-center">
+                                         <NextImage
+                                            src={headshotUrl}
+                                            alt={`Generated headshot ${index + 1}`}
+                                            width={512}
+                                            height={512}
+                                            className="object-cover rounded-t-lg"
+                                        />
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="p-2">
+                                    <Button asChild className="w-full">
+                                        <a href={headshotUrl} download={getUniqueFilename(index)}>
+                                            <Download className="mr-2 h-4 w-4" />
+                                            Download
+                                        </a>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </div>
+                        ))}
+                    </div>
                 )}
-                {detectionResult?.annotatedImage &&
-                  (stage === 'SELECT_FACE' || stage === 'GENERATING') && (
-                    <NextImage
-                      src={detectionResult.annotatedImage}
-                      alt="Annotated image with detected faces"
-                      layout="fill"
-                      className="object-contain rounded-lg"
-                    />
-                  )}
-                {finalHeadshot && stage === 'RESULT' && (
-                  <NextImage
-                    src={finalHeadshot}
-                    alt="Generated professional headshot"
-                    layout="fill"
-                    className="object-contain rounded-lg"
-                  />
-                )}
-              </div>
             </CardContent>
-            {finalHeadshot && stage === 'RESULT' && (
-              <CardFooter className="flex-col gap-4">
-                <Button asChild className="w-full">
-                  <a href={finalHeadshot} download={getUniqueFilename()}>
-                    <Download className="mr-2 h-4 w-4" /> Download Headshot
-                  </a>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleStartOver}
-                >
-                  Start Over
-                </Button>
-              </CardFooter>
-            )}
           </Card>
         </div>
       </div>

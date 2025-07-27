@@ -1,9 +1,9 @@
 
 'use server';
 /**
- * @fileOverview A flow to generate a professional LinkedIn headshot from an image.
+ * @fileOverview A flow to generate professional LinkedIn headshots from an image.
  *
- * - generateLinkedInHeadshot - A function that takes an image and returns a professional headshot.
+ * - generateLinkedInHeadshot - A function that takes an image and returns professional headshots for each detected face.
  * - GenerateLinkedInHeadshotInput - The input type for the function.
  * - GenerateLinkedInHeadshotOutput - The return type for the function.
  */
@@ -15,18 +15,18 @@ const GenerateLinkedInHeadshotInputSchema = z.object({
   photoDataUri: z
     .string()
     .describe(
-      "A photo to use as a base, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A photo to use as a base, as a data URI that must include a MIME type and use Base64 encoding."
     ),
-  instructions: z.string().optional().describe('Instructions on which person to use, e.g., "the person on the left".'),
 });
 export type GenerateLinkedInHeadshotInput = z.infer<typeof GenerateLinkedInHeadshotInputSchema>;
 
 const GenerateLinkedInHeadshotOutputSchema = z.object({
-  image: z
-    .string()
+  images: z
+    .array(z.string())
     .describe(
-      'The generated headshot image as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.'
+      'The generated headshot images as a list of data URIs.'
     ),
+    faceCount: z.number().int().describe('The number of faces detected and headshots generated.'),
 });
 export type GenerateLinkedInHeadshotOutput = z.infer<typeof GenerateLinkedInHeadshotOutputSchema>;
 
@@ -40,20 +40,41 @@ const generateLinkedInHeadshotFlow = ai.defineFlow(
     inputSchema: GenerateLinkedInHeadshotInputSchema,
     outputSchema: GenerateLinkedInHeadshotOutputSchema,
   },
-  async input => {
-    const userPrompt = input.instructions ? ` Target the following person for the headshot: ${input.instructions}.` : '';
-
-    const {media} = await ai.generate({
+  async (input) => {
+    // This is a complex prompt that asks the model to perform multiple steps.
+    // 1. Detect all faces.
+    // 2. For each face, generate a new image.
+    // 3. The schema expects an array of strings (the image data URIs).
+    const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
       prompt: [
-        {media: {url: input.photoDataUri}},
-        {text: `Generate a professional corporate headshot using the face from this image. It is critical that you DO NOT change the person's facial features. The final image should look like a real photograph, not an illustration. The subject should be wearing professional business attire. The background should be a simple, neutral, out-of-focus office or studio setting. The lighting should be soft and flattering, like a professional photoshoot. Ensure the final image is a high-quality, realistic photograph.${userPrompt}`},
+        { media: { url: input.photoDataUri } },
+        {
+          text: `First, carefully analyze the provided image and detect every individual human face present. 
+          
+For each face you detect, generate a separate, new professional corporate headshot. It is critical that you DO NOT change the person's facial features. The final image should look like a real photograph, not an illustration. 
+          
+For each generated headshot:
+- The subject should be wearing professional business attire.
+- The background should be a simple, neutral, out-of-focus office or studio setting.
+- The lighting should be soft and flattering, as in a professional photoshoot.
+- Ensure the final image is a high-quality, realistic photograph.
+
+Your final output should be a collection of these generated headshot images, one for each person detected in the original photo.`,
+        },
       ],
       config: {
+        // We expect multiple images back, one for each detected face.
         responseModalities: ['TEXT', 'IMAGE'],
+        numImages: 10, // Request a high number to accommodate multiple faces. The model will only return as many as it generates.
       },
     });
 
-    return {image: media.url!};
+    const imageUrls = media.parts.filter(p => p.media).map(p => p.media!.url)
+
+    return {
+      images: imageUrls,
+      faceCount: imageUrls.length,
+    };
   }
 );
