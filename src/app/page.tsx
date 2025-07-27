@@ -44,12 +44,6 @@ import Link from 'next/link';
 
 const tools = [
   {
-    title: 'Chatbot',
-    description: 'Engage in conversations with our AI assistant.',
-    href: '/chatbot',
-    icon: <MessageCircle className="h-8 w-8 text-primary" />,
-  },
-  {
     title: 'Text Summarizer',
     description: 'Get concise summaries of long texts.',
     href: '/summarizer',

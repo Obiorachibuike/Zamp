@@ -46,7 +46,6 @@ import {
 
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: <LayoutGrid /> },
-  { href: '/chatbot', label: 'Chatbot', icon: <MessageCircle /> },
   { href: '/summarizer', label: 'Summarizer', icon: <BookText /> },
   { href: '/composer', label: 'Composer', icon: <Mail /> },
   { href: '/image-generator', label: 'Image Generator', icon: <Image /> },
