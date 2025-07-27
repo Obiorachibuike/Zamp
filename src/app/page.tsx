@@ -233,12 +233,6 @@ const tools = [
     icon: <MessageCircle className="h-8 w-8 text-primary" />,
   },
   {
-    title: 'LinkedIn Headshot Generator',
-    description: 'Create a professional headshot for your profile.',
-    href: '/linkedin-headshot-generator',
-    icon: <Briefcase className="h-8 w-8 text-primary" />,
-  },
-  {
     title: 'Prompt Generator',
     description: 'Expand a simple idea into a detailed AI prompt.',
     href: '/prompt-generator',

@@ -1,65 +1,194 @@
+'use client';
 
-'use server';
-/**
- * @fileOverview A flow to generate a professional LinkedIn headshot from an image.
- *
- * - generateLinkedInHeadshot - A function that takes an image and returns a professional headshot.
- * - GenerateLinkedInHeadshotInput - The input type for the function.
- * - GenerateLinkedInHeadshotOutput - The return type for the function.
- */
+import {
+  BookText,
+  Image,
+  LayoutGrid,
+  Mail,
+  MessageCircle,
+  Settings,
+  Smile,
+  Type,
+  FileCheck,
+  Code2,
+  Video,
+  Scan,
+  Mic,
+  BarChart,
+  Languages,
+  Wand,
+  HelpCircle,
+  TrendingUp,
+  Reply,
+  Copy,
+  Edit,
+  Share2,
+  Feather,
+  Youtube,
+  Search,
+  BookOpen,
+  Brain,
+  MessageSquareQuote,
+  Palette,
+  Film,
+  Music,
+  Sparkles,
+  FileText,
+  Briefcase,
+  PenLine,
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  SidebarContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from './ui/sidebar';
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-
-const GenerateLinkedInHeadshotInputSchema = z.object({
-  photoDataUri: z
-    .string()
-    .describe(
-      "A photo to use as a base, as a data URI that must include a MIME type and use Base64 encoding."
-    ),
-});
-export type GenerateLinkedInHeadshotInput = z.infer<typeof GenerateLinkedInHeadshotInputSchema>;
-
-const GenerateLinkedInHeadshotOutputSchema = z.object({
-  image: z
-    .string()
-    .describe(
-      'The generated headshot image as a data URI.'
-    ),
-});
-export type GenerateLinkedInHeadshotOutput = z.infer<typeof GenerateLinkedInHeadshotOutputSchema>;
-
-export async function generateLinkedInHeadshot(input: GenerateLinkedInHeadshotInput): Promise<GenerateLinkedInHeadshotOutput> {
-  return generateLinkedInHeadshotFlow(input);
-}
-
-const generateLinkedInHeadshotFlow = ai.defineFlow(
+const menuItems = [
+  { href: '/', label: 'Dashboard', icon: <LayoutGrid /> },
+  { href: '/summarizer', label: 'Summarizer', icon: <BookText /> },
+  { href: '/composer', label: 'Composer', icon: <Mail /> },
+  { href: '/image-generator', label: 'Image Generator', icon: <Image /> },
+  { href: '/talking-photo', label: 'Talking Photo', icon: <MessageSquareQuote /> },
+  { href: '/avatar-generator', label: 'Avatar Generator', icon: <Smile /> },
+  { href: '/image-to-cartoon', label: 'Image to Cartoon', icon: <Palette /> },
+  { href: '/image-to-animation', label: 'Image to Animation', icon: <Film /> },
+  { href: '/lyrics-generator', label: 'Lyrics Generator', icon: <Music /> },
+  { href: '/image-captioning', label: 'Image Captioning', icon: <Type /> },
+  { href: '/grammar-checker', label: 'Grammar Checker', icon: <FileCheck /> },
+  { href: '/code-generator', label: 'Code Generator', icon: <Code2 /> },
+  { href: '/video-generator', label: 'Video Generator', icon: <Video /> },
   {
-    name: 'generateLinkedInHeadshotFlow',
-    inputSchema: GenerateLinkedInHeadshotInputSchema,
-    outputSchema: GenerateLinkedInHeadshotOutputSchema,
+    href: '/youtube-transcriber',
+    label: 'YouTube Transcriber',
+    icon: <Youtube />,
   },
-  async (input) => {
-    const { media } = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: [
-        { media: { url: input.photoDataUri } },
-        {
-          text: `Transform this photo into a professional LinkedIn headshot. Retain the subject's facial features and identity, but enhance overall clarity and lighting. Use a soft, neutral background such as light gray, white, or corporate blue. The subject should be centered, looking directly at the camera, with a confident and approachable expression. Adjust clothing to look business casual or formal — such as a blazer, dress shirt, or blouse. Ensure even skin tone, natural retouching, and a clean, high-resolution finish suitable for a corporate profile.`,
-        },
-      ],
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'],
-      },
-    });
+  {
+    href: '/background-remover',
+    label: 'Background Remover',
+    icon: <Scan />,
+  },
+  {
+    href: '/image-editor',
+    label: 'Image Editor',
+    icon: <Edit />,
+  },
+    {
+    href: '/image-enhancer',
+    label: 'Image Enhancer',
+    icon: <Sparkles />,
+  },
+  {
+    href: '/text-to-speech',
+    label: 'Text-to-Speech',
+    icon: <Mic />,
+  },
+  {
+    href: '/chart-generator',
+    label: 'Chart Generator',
+    icon: <BarChart />,
+  },
+  {
+    href: '/translator',
+    label: 'Translator',
+    icon: <Languages />,
+  },
+  {
+    href: '/sentiment-analyzer',
+    label: 'Sentiment Analyzer',
+    icon: <TrendingUp />,
+  },
+  {
+    href: '/tone-changer',
+    label: 'Tone Changer',
+    icon: <Wand />,
+  },
+  {
+    href: '/quiz-generator',
+    label: 'Quiz Generator',
+    icon: <HelpCircle />,
+  },
+  {
+    href: '/email-reply-generator',
+    label: 'Email Reply Generator',
+    icon: <Reply />,
+  },
+  {
+    href: '/flashcard-generator',
+    label: 'Flashcard Generator',
+    icon: <Copy />,
+  },
+  {
+    href: '/social-content-generator',
+    label: 'Social Content Generator',
+    icon: <Share2 />,
+  },
+  {
+    href: '/humanizer',
+    label: 'AI Text Humanizer',
+    icon: <Feather />,
+  },
+  {
+    href: '/researcher',
+    label: 'AI Researcher',
+    icon: <Search />,
+  },
+  {
+    href: '/story-writer',
+    label: 'Story Writer',
+    icon: <BookOpen />,
+  },
+  {
+    href: '/non-fiction-writer',
+    label: 'Non-Fiction Writer',
+    icon: <Brain />,
+  },
+  {
+    href: '/document-analyzer',
+    label: 'Document Analyzer',
+    icon: <FileText />,
+  },
+  { href: '/chatbot', label: 'AI Chatbot', icon: <MessageCircle />},
+  {
+    href: '/prompt-generator',
+    label: 'Prompt Generator',
+    icon: <PenLine />,
+  },
+  { href: '/settings', label: 'Settings', icon: <Settings /> },
+];
 
-    const imageUrl = media?.url;
-    if (!imageUrl) {
-      throw new Error('Could not generate an image.');
-    }
+export function MainNav() {
+  const pathname = usePathname();
 
-    return {
-      image: imageUrl,
-    };
+  const sortedMenuItems = [...menuItems.slice(1)].sort((a,b) => a.label.localeCompare(b.label));
+  sortedMenuItems.unshift(menuItems[0]); // Keep Dashboard at the top
+  const settingsIndex = sortedMenuItems.findIndex(item => item.href === '/settings');
+  if (settingsIndex > -1) {
+    const [settingsItem] = sortedMenuItems.splice(settingsIndex, 1);
+    sortedMenuItems.push(settingsItem);
   }
-);
+
+
+  return (
+    <SidebarContent>
+      <SidebarMenu>
+        {sortedMenuItems.map((item) => (
+          <SidebarMenuItem key={item.href}>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === item.href}
+              tooltip={item.label}
+            >
+              <Link href={item.href}>
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarContent>
+  );
+}

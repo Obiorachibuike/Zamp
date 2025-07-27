@@ -153,11 +153,6 @@ const menuItems = [
   },
   { href: '/chatbot', label: 'AI Chatbot', icon: <MessageCircle />},
   {
-    href: '/linkedin-headshot-generator',
-    label: 'LinkedIn Headshot Generator',
-    icon: <Briefcase />,
-  },
-  {
     href: '/prompt-generator',
     label: 'Prompt Generator',
     icon: <PenLine />,
