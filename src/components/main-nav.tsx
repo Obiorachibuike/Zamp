@@ -33,6 +33,7 @@ import {
   Palette,
   Film,
   Music,
+  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -72,6 +73,11 @@ const menuItems = [
     href: '/image-editor',
     label: 'Image Editor',
     icon: <Edit />,
+  },
+    {
+    href: '/image-enhancer',
+    label: 'Image Enhancer',
+    icon: <Sparkles />,
   },
   {
     href: '/text-to-speech',

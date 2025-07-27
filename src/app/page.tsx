@@ -38,6 +38,7 @@ import {
   Palette,
   Film,
   Music,
+  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -137,6 +138,12 @@ const tools = [
     description: 'Edit an image using a text prompt.',
     href: '/image-editor',
     icon: <Edit className="h-8 w-8 text-primary" />,
+  },
+    {
+    title: 'Image Enhancer',
+    description: 'Deblur, colorize, and improve image quality.',
+    href: '/image-enhancer',
+    icon: <Sparkles className="h-8 w-8 text-primary" />,
   },
   {
     title: 'Text-to-Speech',
