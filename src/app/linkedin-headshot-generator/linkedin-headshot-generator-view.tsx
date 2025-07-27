@@ -13,13 +13,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Download, Image as ImageIcon, Loader2, Wand2, Upload, Briefcase } from 'lucide-react';
+import { Download, Image as ImageIcon, Loader2, Briefcase } from 'lucide-react';
 import NextImage from 'next/image';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 
 export function LinkedInHeadshotGeneratorView() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState('');
   const [resultUrl, setResultUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -52,7 +54,7 @@ export function LinkedInHeadshotGeneratorView() {
     setResultUrl('');
 
     try {
-      const result = await generateLinkedInHeadshot({ photoDataUri: previewUrl });
+      const result = await generateLinkedInHeadshot({ photoDataUri: previewUrl, prompt });
       setResultUrl(result.image);
     } catch (error: any) {
       console.error('Error generating headshot:', error);
@@ -70,6 +72,11 @@ export function LinkedInHeadshotGeneratorView() {
     }
   };
 
+  const getUniqueFilename = () => {
+    const timestamp = new Date().getTime();
+    return `headshot-${timestamp}.png`;
+  }
+
   return (
     <div className="space-y-8">
       <header className="space-y-1.5">
@@ -85,10 +92,10 @@ export function LinkedInHeadshotGeneratorView() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ImageIcon className="h-6 w-6" /> Your Image
+                <ImageIcon className="h-6 w-6" /> Your Image & Prompt
               </CardTitle>
               <CardDescription>
-                Upload a clear photo of yourself to get started.
+                Upload a clear photo and optionally add a description.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -114,6 +121,17 @@ export function LinkedInHeadshotGeneratorView() {
                     />
                   </div>
                 )}
+                 <div className="space-y-2">
+                  <Label htmlFor="prompt">Optional Description</Label>
+                  <Textarea
+                    id="prompt"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="e.g., wearing a blue suit, smiling slightly"
+                    className="h-20 resize-none"
+                    disabled={isLoading}
+                  />
+                </div>
                 <Button type="submit" disabled={isLoading || !imageFile}>
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -163,7 +181,7 @@ export function LinkedInHeadshotGeneratorView() {
                 size="icon"
                 className="absolute right-4 top-4"
               >
-                <a href={resultUrl} download="linkedin-headshot.png">
+                <a href={resultUrl} download={getUniqueFilename()}>
                   <Download className="h-4 w-4" />
                   <span className="sr-only">Download Headshot</span>
                 </a>
