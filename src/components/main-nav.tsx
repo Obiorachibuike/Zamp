@@ -31,6 +31,7 @@ import {
   Brain,
   MessageSquareQuote,
   Palette,
+  Film,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -50,6 +51,7 @@ const menuItems = [
   { href: '/talking-photo', label: 'Talking Photo', icon: <MessageSquareQuote /> },
   { href: '/avatar-generator', label: 'Avatar Generator', icon: <Smile /> },
   { href: '/image-to-cartoon', label: 'Image to Cartoon', icon: <Palette /> },
+  { href: '/image-to-animation', label: 'Image to Animation', icon: <Film /> },
   { href: '/image-captioning', label: 'Image Captioning', icon: <Type /> },
   { href: '/grammar-checker', label: 'Grammar Checker', icon: <FileCheck /> },
   { href: '/code-generator', label: 'Code Generator', icon: <Code2 /> },

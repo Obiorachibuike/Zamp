@@ -29,3 +29,4 @@ import '@/ai/flows/story-writer.ts';
 import '@/ai/flows/non-fiction-writer.ts';
 import '@/ai/flows/talking-photo.ts';
 import '@/ai/flows/image-to-cartoon.ts';
+import '@/ai/flows/image-to-animation.ts';

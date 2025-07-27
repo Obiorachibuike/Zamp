@@ -36,6 +36,7 @@ import {
   Brain,
   MessageSquareQuote,
   Palette,
+  Film,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -81,6 +82,12 @@ const tools = [
     description: 'Transform a photo into a cartoon-style image.',
     href: '/image-to-cartoon',
     icon: <Palette className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Image to Animation',
+    description: 'Turn a static image into an animated video.',
+    href: '/image-to-animation',
+    icon: <Film className="h-8 w-8 text-primary" />,
   },
   {
     title: 'Image Captioning',
