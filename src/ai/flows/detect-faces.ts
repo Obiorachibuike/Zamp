@@ -62,7 +62,7 @@ const detectFacesFlow = ai.defineFlow(
 
     // The text part of the response might contain the count. We extract it.
     // This is a regex to find a number in the model's text response.
-    const textResponse = (await media.text()) || '';
+    const textResponse = media.text || '';
     const match = textResponse.match(/\d+/);
     const faceCount = match ? parseInt(match[0], 10) : 0; // Default to 0 if no number found
 
