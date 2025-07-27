@@ -11,7 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {googleAI, googleSearch} from '@genkit-ai/googleai';
+import {googleAI} from '@genkit-ai/googleai';
 
 const ChatInputSchema = z.object({
   query: z.string().describe('The user query for the chatbot.'),
@@ -42,7 +42,7 @@ If you do not know the answer to a question, you must use the provided tools to 
 Respond to the following query:
 
 ${input.query}`,
-      tools: [googleSearch],
+      tools: [googleAI.googleSearch],
       model: googleAI.model('gemini-2.0-flash'),
     });
     
