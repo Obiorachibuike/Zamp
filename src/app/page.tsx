@@ -37,6 +37,7 @@ import {
   MessageSquareQuote,
   Palette,
   Film,
+  Music,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -88,6 +89,12 @@ const tools = [
     description: 'Turn a static image into an animated video.',
     href: '/image-to-animation',
     icon: <Film className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Lyrics Generator',
+    description: 'Generate song lyrics from a prompt and genre.',
+    href: '/lyrics-generator',
+    icon: <Music className="h-8 w-8 text-primary" />,
   },
   {
     title: 'Image Captioning',
