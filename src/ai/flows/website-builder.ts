@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow to generate a single-page website from a text prompt.
@@ -36,9 +37,9 @@ Your task is to generate the complete HTML for a single-page website based on th
 1.  **Single HTML File:** The entire output must be a single, self-contained HTML file.
 2.  **Tailwind CSS:** Use Tailwind CSS classes directly in the HTML for all styling. You must use the CDN link for Tailwind CSS in the <head> section: \`<script src="https://cdn.tailwindcss.com"></script>\`. Do not use any custom CSS or <style> blocks.
 3.  **Content Sections:** Structure the website logically with clear sections (e.g., Hero, Features, About, Contact).
-4.  **Responsive Design:** The layout must be fully responsive and look great on all screen sizes (mobile, tablet, desktop).
-5.  **Placeholder Images:** Use placeholder images from \`https://placehold.co\` for any images. For example: \`https://placehold.co/600x400.png\`. Do not include any text on the placeholders.
-6.  **Professional Design:** The design should be clean, modern, and visually appealing. Use a consistent color scheme and typography.
+4.  **Placeholder Images:** Use placeholder images from \`https://placehold.co\` for any images. For example: \`https://placehold.co/600x400.png\`. Do not include any text on the placeholders.
+5.  **Professional Design:** The design should be clean, modern, and visually appealing. Use a consistent color scheme and typography.
+6.  **Inline SVG Icons:** Where appropriate, use inline SVG icons to enhance the design (e.g., for feature lists, buttons, social media links). You can use icons from a library like Lucide, but embed the SVG code directly into the HTML.
 7.  **No Comments or Explanations:** Your output should ONLY be the raw HTML code. Do not include any markdown formatting, comments, or explanations before or after the code.
 
 **User's Website Description:**
