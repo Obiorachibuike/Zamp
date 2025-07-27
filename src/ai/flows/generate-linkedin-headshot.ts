@@ -70,7 +70,8 @@ Your final output should be a collection of these generated headshot images, one
       },
     });
 
-    const imageUrls = media.parts.filter(p => p.media).map(p => p.media!.url)
+    const imageUrls = media.parts?.filter(p => p.media).map(p => p.media!.url) || (media.url ? [media.url] : []);
+
 
     return {
       images: imageUrls,
