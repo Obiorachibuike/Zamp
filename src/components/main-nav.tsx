@@ -36,6 +36,7 @@ import {
   Sparkles,
   FileText,
   Briefcase,
+  PenLine,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -155,6 +156,11 @@ const menuItems = [
     href: '/linkedin-headshot-generator',
     label: 'LinkedIn Headshot Generator',
     icon: <Briefcase />,
+  },
+  {
+    href: '/prompt-generator',
+    label: 'Prompt Generator',
+    icon: <PenLine />,
   },
   { href: '/settings', label: 'Settings', icon: <Settings /> },
 ];

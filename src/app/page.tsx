@@ -41,6 +41,7 @@ import {
   Sparkles,
   FileText,
   Briefcase,
+  PenLine,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -236,6 +237,12 @@ const tools = [
     description: 'Create a professional headshot for your profile.',
     href: '/linkedin-headshot-generator',
     icon: <Briefcase className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: 'Prompt Generator',
+    description: 'Expand a simple idea into a detailed AI prompt.',
+    href: '/prompt-generator',
+    icon: <PenLine className="h-8 w-8 text-primary" />,
   },
 ];
 
