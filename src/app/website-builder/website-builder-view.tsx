@@ -1,4 +1,3 @@
-
 'use client';
 
 import { generateWebsite } from '@/ai/flows/website-builder';
@@ -35,20 +34,16 @@ export function WebsiteBuilderView() {
 
     setIsLoading(true);
     let accumulatedCode = htmlCode;
-    // On the first request, we want to clear the slate.
-    // For subsequent requests, we build upon the existing code.
     if (!htmlCode) {
       setHtmlCode('');
     }
 
     try {
-      // The generateWebsite function is an async generator
       const stream = generateWebsite({ prompt, existingHtml: htmlCode });
 
       let firstChunk = true;
       for await (const chunk of stream) {
         if (firstChunk) {
-          // The AI will regenerate the whole page, so we clear the old code on the first chunk.
           accumulatedCode = '';
           firstChunk = false;
         }
@@ -64,7 +59,7 @@ export function WebsiteBuilderView() {
       });
     } finally {
       setIsLoading(false);
-      setPrompt(''); // Clear prompt after submission is complete
+      setPrompt('');
     }
   };
 
@@ -96,8 +91,8 @@ export function WebsiteBuilderView() {
               </CardTitle>
               <CardDescription>
                 {htmlCode 
-                    ? "Describe the changes or new features you want to add."
-                    : "Describe the single-page website you want to build. Be as detailed as possible."
+                  ? "Describe the changes or new features you want to add."
+                  : "Describe the single-page website you want to build. Be as detailed as possible."
                 }
               </CardDescription>
             </CardHeader>
@@ -142,10 +137,10 @@ export function WebsiteBuilderView() {
                 </TabsTrigger>
               </TabsList>
               {htmlCode && (
-                  <Button variant="outline" size="sm" onClick={handleCopy}>
-                      <Clipboard className="mr-2 h-4 w-4" />
-                      Copy Code
-                  </Button>
+                <Button variant="outline" size="sm" onClick={handleCopy}>
+                  <Clipboard className="mr-2 h-4 w-4" />
+                  Copy Code
+                </Button>
               )}
             </div>
             <TabsContent value="preview">
@@ -159,7 +154,7 @@ export function WebsiteBuilderView() {
                       <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
                         <Loader2 className="h-8 w-8 animate-spin" />
                         <p>Building your website...</p>
-                      </div>>
+                      </div>
                     ) : htmlCode ? (
                       <iframe
                         srcDoc={htmlCode}
@@ -180,7 +175,7 @@ export function WebsiteBuilderView() {
               </Card>
             </TabsContent>
             <TabsContent value="code">
-               <Card className="mt-2">
+              <Card className="mt-2">
                 <CardHeader>
                   <CardTitle>HTML Code</CardTitle>
                 </CardHeader>
@@ -190,8 +185,7 @@ export function WebsiteBuilderView() {
                       <code className="text-sm font-code">
                         {isLoading && !htmlCode
                           ? 'Generating code...'
-                          : htmlCode ||
-                            'HTML code will appear here.'}
+                          : htmlCode || 'HTML code will appear here.'}
                       </code>
                     </pre>
                   </div>
